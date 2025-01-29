@@ -115,11 +115,14 @@ public class WeatherControllerTest {
     }
 
     @Test
-    void getWeatherByCity_() throws Exception {
+    void getWeatherByCity_withAdditionalParameters() throws Exception {
         String city = "Manila";
+        String unitOfMeasurement = "imperial";
+        String language = "en";
+        String url = String.format("city=%s&units=%s&lang=%s", city, unitOfMeasurement, language);
         String country = "PH";
 
-        MvcResult result = mockMvc.perform(get("/weather/" + city))
+        MvcResult result = mockMvc.perform(get("/weather?" + url))
                 .andExpect(status().isOk())
                 .andReturn();
 
@@ -139,5 +142,68 @@ public class WeatherControllerTest {
         assertNotNull(weather.getMaxTemp());
         assertNotNull(weather.getHumidity());
         assertNotNull(weather.getWindSpeed());
+    }
+
+    @Test
+    void getWeatherByCity_invalidUnit_shouldReturnMetricUnits() throws Exception {
+        String city = "Manila";
+        String unitOfMeasurement = "invalidUnit";
+        String url = String.format("city=%s&units=%s", city, unitOfMeasurement);
+        String country = "PH";
+
+        MvcResult result = mockMvc.perform(get("/weather?" + url))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseBody = result.getResponse().getContentAsString();
+        System.out.println("Response Body: " + responseBody);
+
+        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
+
+        assertEquals(city, weather.getCityName());
+        assertEquals(country, weather.getCountry());
+        assertNotNull(weather.getWeatherId());
+    }
+
+    @Test
+    void getWeatherByCity_shouldReturnSpanishLangauge() throws Exception {
+        String city = "Manila";
+        String lang = "es";
+        String url = String.format("city=%s&lang=%s", city, lang);
+        String country = "PH";
+
+        MvcResult result = mockMvc.perform(get("/weather?" + url))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseBody = result.getResponse().getContentAsString();
+        System.out.println("Response Body: " + responseBody);
+
+        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
+
+        assertEquals(city, weather.getCityName());
+        assertEquals(country, weather.getCountry());
+        assertNotNull(weather.getWeatherId());
+    }
+
+    @Test
+    void getWeatherByCity_usingNonAvailableLanguage_shouldReturnEnglish() throws Exception {
+        String city = "Manila";
+        String lang = "tagalog";
+        String url = String.format("city=%s&lang=%s", city, lang);
+        String country = "PH";
+
+        MvcResult result = mockMvc.perform(get("/weather?" + url))
+                .andExpect(status().isOk())
+                .andReturn();
+
+        String responseBody = result.getResponse().getContentAsString();
+        System.out.println("Response Body: " + responseBody);
+
+        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
+
+        assertEquals(city, weather.getCityName());
+        assertEquals(country, weather.getCountry());
+        assertNotNull(weather.getWeatherId());
     }
 }

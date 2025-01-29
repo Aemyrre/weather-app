@@ -14,11 +14,10 @@ import toyprojects.weatherapp.constants.ValidUnits;
 import toyprojects.weatherapp.entity.WeatherDataDTO;
 import toyprojects.weatherapp.service.WeatherService;
 
-
 @Controller
 @RequestMapping("/weather")
 public class WeatherController {
-    
+
     private final WeatherService weatherService;
 
     public WeatherController(WeatherService weatherService) {
@@ -30,32 +29,32 @@ public class WeatherController {
         WeatherDataDTO getWeatherDataDTO = weatherService.getWeatherByCity(city);
         return ResponseEntity.ok(getWeatherDataDTO);
     }
-    
-    @GetMapping
-    public ResponseEntity<WeatherDataDTO> getWeatherByCity(@RequestParam String city, 
-    @RequestParam(required=false, defaultValue="metric") String units,
-    @RequestParam(required=false, defaultValue="en") String language) {
-        units = unitValidator(units);
-        language = languageValidator(language);
 
-        WeatherDataDTO getWeatherDataDTO = weatherService.getWeatherByCity(city, units, language);
+    @GetMapping
+    public ResponseEntity<WeatherDataDTO> getWeatherByCity(@RequestParam String city,
+            @RequestParam(required = false, defaultValue = "metric") String units,
+            @RequestParam(required = false, defaultValue = "en") String lang) {
+        units = unitValidator(units);
+        lang = languageValidator(lang);
+
+        WeatherDataDTO getWeatherDataDTO = weatherService.getWeatherByCity(city, units, lang);
         return ResponseEntity.ok(getWeatherDataDTO);
     }
 
     private String unitValidator(String units) {
         String tempUnit = units;
         boolean isValidUnit = Arrays.stream(ValidUnits.values())
-            .anyMatch(unit -> unit.name().equalsIgnoreCase(tempUnit));
-            
+                .anyMatch(unit -> unit.name().equalsIgnoreCase(tempUnit));
+
         return !isValidUnit ? "metric" : units;
     }
 
     private String languageValidator(String language) {
         String tempLang = language;
         boolean isValidUnit = Arrays.stream(ValidLangauge.values())
-            .anyMatch(unit -> unit.name().equalsIgnoreCase(tempLang));
+                .anyMatch(unit -> unit.name().equalsIgnoreCase(tempLang));
 
         return !isValidUnit ? "en" : language;
     }
-    
+
 }
