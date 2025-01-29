@@ -51,10 +51,16 @@ Enter the name of a city in the search box to retrieve weather information.
 
 ## Screenshots
 1. Using single argument (i.e., name of place)
-![image](https://github.com/user-attachments/assets/6278ef9e-a293-4e56-8ced-cf5a61dcba37)
+<div align="center" width="229" height="431.5">
+<!-- ![image](https://github.com/user-attachments/assets/6278ef9e-a293-4e56-8ced-cf5a61dcba37) -->
+   <img src="https://github.com/user-attachments/assets/6278ef9e-a293-4e56-8ced-cf5a61dcba37" alt="RESTful API Weather app screenshot-1" />
+</div>
 
 2. Using multiple arguments (i.e., city, unit of measurement, and language)
-![image](https://github.com/user-attachments/assets/381fff3f-bb3f-4214-b75b-5f0039fc2d7d)
+<div align="center">
+<!-- ![image](https://github.com/user-attachments/assets/381fff3f-bb3f-4214-b75b-5f0039fc2d7d) -->
+   <img src="https://github.com/user-attachments/assets/381fff3f-bb3f-4214-b75b-5f0039fc2d7d" alt="RESTful API Weather app screenshot-2"/>
+</div>
 
 ## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
