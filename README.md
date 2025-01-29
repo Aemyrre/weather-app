@@ -49,6 +49,13 @@ Open a web browser and navigate to http://localhost:8080.
 
 Enter the name of a city in the search box to retrieve weather information.
 
+## Screenshots
+1. Using single argument (i.e., name of place)
+![image](https://github.com/user-attachments/assets/6278ef9e-a293-4e56-8ced-cf5a61dcba37)
+
+2. Using multiple arguments (i.e., city, unit of measurement, and language)
+![image](https://github.com/user-attachments/assets/381fff3f-bb3f-4214-b75b-5f0039fc2d7d)
+
 ## License
 This project is licensed under the MIT License. See the LICENSE file for more details.
 
