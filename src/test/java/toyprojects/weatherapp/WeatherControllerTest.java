@@ -115,6 +115,21 @@ public class WeatherControllerTest {
     }
 
     @Test
+    void getWeatherByCity_usingInvalidCity_nullInput() throws Exception {
+        String city = null;
+        String error = "City not found";
+        String message = "City not found";
+
+        MvcResult result = mockMvc.perform(get("/weather/" + city))
+                .andExpect(status().isNotFound())
+                .andExpect(jsonPath("$.error").value(error))
+                .andExpect(jsonPath("$.message").value(message))
+                .andReturn();
+
+        System.out.println("Error Result: " + result.getResponse().getContentAsString());
+    }
+
+    @Test
     void getWeatherByCity_withAdditionalParameters() throws Exception {
         String city = "Manila";
         String unitOfMeasurement = "imperial";
@@ -147,7 +162,7 @@ public class WeatherControllerTest {
     @Test
     void getWeatherByCity_invalidUnit_shouldReturnMetricUnits() throws Exception {
         String city = "Manila";
-        String unitOfMeasurement = "invalidUnit";
+        String unitOfMeasurement = null;
         String url = String.format("city=%s&units=%s", city, unitOfMeasurement);
         String country = "PH";
 
@@ -189,7 +204,7 @@ public class WeatherControllerTest {
     @Test
     void getWeatherByCity_usingNonAvailableLanguage_shouldReturnEnglish() throws Exception {
         String city = "Manila";
-        String lang = "tagalog";
+        String lang = null;
         String url = String.format("city=%s&lang=%s", city, lang);
         String country = "PH";
 

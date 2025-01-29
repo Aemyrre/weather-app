@@ -1,6 +1,6 @@
 package toyprojects.weatherapp.constants;
 
-public enum ValidLangauge {
+public enum ValidLanguage {
     SQ, //Albanian
     AF, //Afrikaans
     AR, //Arabic

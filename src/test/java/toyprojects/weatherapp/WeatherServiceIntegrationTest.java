@@ -1,6 +1,5 @@
 package toyprojects.weatherapp;
 
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -24,10 +23,10 @@ public class WeatherServiceIntegrationTest {
     }
 
     @Test
-    void getWeatherByCity() throws Exception {       
+    void getWeatherByCity() throws Exception {
         String city = "Manila";
         String country = "PH";
-            
+
         WeatherDataDTO requestCity = weatherService.getWeatherByCity(city);
 
         assertEquals(city, requestCity.getCityName());
@@ -36,10 +35,10 @@ public class WeatherServiceIntegrationTest {
     }
 
     @Test
-    void getWeatherByCity_differentSpelling() throws Exception {       
+    void getWeatherByCity_differentSpelling() throws Exception {
         String city = "maNiLa";
         String country = "PH";
-            
+
         WeatherDataDTO requestCity = weatherService.getWeatherByCity(city);
 
         assertEquals(city.toLowerCase(), requestCity.getCityName().toLowerCase());
@@ -61,7 +60,7 @@ public class WeatherServiceIntegrationTest {
 
     @Test
     void getWeatherByCity_usingInvalidCity() throws Exception {
-        String city = "invalidCity";
+        String city = "";
         String errorMessage = "City not found";
 
         CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getWeatherByCity(city));
@@ -70,12 +69,22 @@ public class WeatherServiceIntegrationTest {
     }
 
     @Test
-    void getWeatherByCity_ImperialUnit() throws Exception {       
+    void getWeatherByCity_usingInvalidCity_nullInput() throws Exception {
+        String city = null;
+        String errorMessage = "City not found";
+
+        CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getWeatherByCity(city));
+
+        assertEquals(errorMessage, ex.getMessage());
+    }
+
+    @Test
+    void getWeatherByCity_ImperialUnit() throws Exception {
         String city = "Tokyo";
         String country = "JP";
         String units = "imperial";
         String language = "en";
-            
+
         WeatherDataDTO requestCity = weatherService.getWeatherByCity(city, units, language);
 
         assertEquals(city, requestCity.getCityName());
@@ -84,12 +93,12 @@ public class WeatherServiceIntegrationTest {
     }
 
     @Test
-    void getWeatherByCity_invalidUnit_shouldReturnStandardUnits() throws Exception {       
+    void getWeatherByCity_invalidUnit_shouldReturnStandardUnits() throws Exception {
         String city = "Tokyo";
         String units = "invalidUnits";
         String language = "en";
         String country = "JP";
-            
+
         WeatherDataDTO requestCity = weatherService.getWeatherByCity(city, units, language);
 
         assertEquals(city, requestCity.getCityName());
@@ -98,12 +107,12 @@ public class WeatherServiceIntegrationTest {
     }
 
     @Test
-    void getWeatherByCity_ArabicLanguage() throws Exception {       
+    void getWeatherByCity_ArabicLanguage() throws Exception {
         String city = "Tokyo";
         String country = "JP";
         String units = "imperial";
         String language = "ar";
-            
+
         WeatherDataDTO requestCity = weatherService.getWeatherByCity(city, units, language);
 
         assertEquals(city, requestCity.getCityName());
@@ -112,12 +121,12 @@ public class WeatherServiceIntegrationTest {
     }
 
     @Test
-    void getWeatherByCity_shouldReturnEnglishWhenLanguageIsInvalid() throws Exception {       
+    void getWeatherByCity_shouldReturnEnglishWhenLanguageIsInvalid() throws Exception {
         String city = "Tokyo";
         String country = "JP";
         String units = "metric";
         String language = "filipino";
-            
+
         WeatherDataDTO requestCity = weatherService.getWeatherByCity(city, units, language);
 
         assertEquals(city, requestCity.getCityName());
