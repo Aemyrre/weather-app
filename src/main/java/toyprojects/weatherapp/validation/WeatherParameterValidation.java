@@ -7,7 +7,6 @@ import org.springframework.stereotype.Component;
 import toyprojects.weatherapp.constants.ValidLanguage;
 import toyprojects.weatherapp.constants.ValidUnits;
 import toyprojects.weatherapp.exception.CityNotFoundException;
-import toyprojects.weatherapp.exception.InvalidInputException;
 
 @Component
 public class WeatherParameterValidation {
@@ -25,7 +24,7 @@ public class WeatherParameterValidation {
     public String validateUnitOfMeasurement(String units) {
         System.out.println("validateUnitOfMeasurement was called");
         if (units == null || units.trim().isEmpty() || units.isBlank()) {
-            throw new InvalidInputException("Unit of measurement cannot be empty or blank");
+            units = "me";
         }
 
         String tempUnit = units;
@@ -38,7 +37,7 @@ public class WeatherParameterValidation {
     public String validateLanguage(String lang) {
         System.out.println("validateLanguage was called");
         if (lang == null || lang.trim().isEmpty() || lang.isBlank()) {
-            throw new InvalidInputException("Language cannot be empty or blank");
+            lang = "en";
         }
 
         String tempLang = lang;

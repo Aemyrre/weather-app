@@ -1,5 +1,7 @@
 package toyprojects.weatherapp;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -133,4 +135,18 @@ public class WeatherServiceIntegrationTest {
         assertEquals(country, requestCity.getCountry());
         assertNotNull(requestCity.getHumidity());
     }
+
+    @Test
+    void getWeather3HourForecastByCity() throws Exception {
+        String city = "Manila";
+        String country = "PH";
+        int size = 40;
+
+        List<WeatherDataDTO> requestCity = weatherService.getWeather3HourForecastByCity(city);
+
+        assertEquals(city, requestCity.get(0).getCityName());
+        assertEquals(country, requestCity.get(0).getCountry());
+        assertEquals(size, requestCity.size());
+    }
+
 }

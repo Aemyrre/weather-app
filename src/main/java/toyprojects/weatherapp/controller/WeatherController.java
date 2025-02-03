@@ -1,5 +1,8 @@
 package toyprojects.weatherapp.controller;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -33,6 +36,20 @@ public class WeatherController {
 
         WeatherDataDTO getWeatherDataDTO = weatherService.getWeatherByCity(city, units, lang);
         return ResponseEntity.ok(getWeatherDataDTO);
+    }
+
+    @GetMapping("/forecast/{city}")
+    public ResponseEntity<List<WeatherDataDTO>> getWeather3HourForecastByCity(@RequestParam String city) {
+        List<WeatherDataDTO> weatherDataDTOs = weatherService.getWeather3HourForecastByCity(city);
+        return ResponseEntity.ok(weatherDataDTOs);
+    }
+
+    @GetMapping("/forecast")
+    public ResponseEntity<List<WeatherDataDTO>> getWeather3HourForecastByCity(@RequestParam String city,
+            @RequestParam(required = false, defaultValue = "metric") String units,
+            @RequestParam(required = false, defaultValue = "en") String lang) {
+        List<WeatherDataDTO> weatherDataDTOs = new ArrayList<>();
+        return ResponseEntity.ok(weatherDataDTOs);
     }
 
 }

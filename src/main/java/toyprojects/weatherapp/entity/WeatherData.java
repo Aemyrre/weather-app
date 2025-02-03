@@ -1,8 +1,14 @@
 package toyprojects.weatherapp.entity;
+
 import java.math.BigDecimal;
+import java.time.Instant;
+import java.time.ZoneOffset;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Objects;
 
 public class WeatherData {
+
     private String cityName;
     private String country;
 
@@ -18,10 +24,12 @@ public class WeatherData {
 
     private BigDecimal windSpeed;
 
-    public WeatherData() { }
-    
+    private String formattedDateTime;
 
-    public WeatherData(String cityName, String country, int weatherId, String weatherDescription, String weatherIcon, BigDecimal temperature, BigDecimal tempFeelsLike, BigDecimal minTemp, BigDecimal maxTemp, int humidity, BigDecimal windSpeed) {
+    public WeatherData() {
+    }
+
+    public WeatherData(String cityName, String country, int weatherId, String weatherDescription, String weatherIcon, BigDecimal temperature, BigDecimal tempFeelsLike, BigDecimal minTemp, BigDecimal maxTemp, int humidity, BigDecimal windSpeed, Long unix, Integer timezone) {
         this.cityName = cityName;
         this.country = country;
         this.weatherId = weatherId;
@@ -33,8 +41,16 @@ public class WeatherData {
         this.maxTemp = maxTemp;
         this.humidity = humidity;
         this.windSpeed = windSpeed;
+        this.formattedDateTime = convertUnixToDateTime(unix, timezone);
     }
-    
+
+    private String convertUnixToDateTime(Long unixTime, Integer timeZone) {
+        Instant instant = Instant.ofEpochSecond(unixTime);
+        ZonedDateTime dateTime = instant.atZone(ZoneOffset.ofTotalSeconds(timeZone));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        return String.format("%s", dateTime.format(formatter));
+    }
 
     public String getCityName() {
         return this.cityName;
@@ -124,22 +140,36 @@ public class WeatherData {
         this.windSpeed = windSpeed;
     }
 
+    public String getFormattedDateTime() {
+        return this.formattedDateTime;
+    }
+
+    public void setFormattedDateTime(Long unix, Integer timezone) {
+        this.formattedDateTime = convertUnixToDateTime(unix, timezone);
+    }
 
     @Override
     public boolean equals(Object o) {
-        if (o == this)
+        if (o == this) {
             return true;
+        }
         if (!(o instanceof WeatherData)) {
             return false;
         }
         WeatherData weatherData = (WeatherData) o;
-        return Objects.equals(cityName, weatherData.cityName) && Objects.equals(country, weatherData.country) && weatherId == weatherData.weatherId && Objects.equals(weatherDescription, weatherData.weatherDescription) && Objects.equals(weatherIcon, weatherData.weatherIcon) && Objects.equals(temperature, weatherData.temperature) && Objects.equals(tempFeelsLike, weatherData.tempFeelsLike) && Objects.equals(minTemp, weatherData.minTemp) && Objects.equals(maxTemp, weatherData.maxTemp) && humidity == weatherData.humidity && Objects.equals(windSpeed, weatherData.windSpeed);
+        return Objects.equals(cityName, weatherData.cityName) && Objects.equals(country, weatherData.country) && weatherId == weatherData.weatherId && Objects.equals(weatherDescription, weatherData.weatherDescription) && Objects.equals(weatherIcon, weatherData.weatherIcon) && Objects.equals(temperature, weatherData.temperature) && Objects.equals(tempFeelsLike, weatherData.tempFeelsLike) && Objects.equals(minTemp, weatherData.minTemp) && Objects.equals(maxTemp, weatherData.maxTemp) && humidity == weatherData.humidity && Objects.equals(windSpeed, weatherData.windSpeed) && Objects.equals(formattedDateTime, weatherData.formattedDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cityName, country, weatherId, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed);
+        return Objects.hash(cityName, country, weatherId, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
     }
-    
+
+    @Override
+    public String toString() {
+        String str = String.format("WeatherData{city:'%s', country:'%s', weatherId:'%s', weatherDescription:'%s', weatherIcon:'%s', temperature:'%s', tempFeelsLike:'%s', minTemp:'%s', maxTemp:'%s', humidity:'%s', windSpeed:'%s', formattedDateTime:'%s'}",
+                cityName, country, weatherId, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
+        return str;
+    }
 
 }
