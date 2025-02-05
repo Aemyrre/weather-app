@@ -2,10 +2,15 @@ package toyprojects.weatherapp.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -34,6 +39,16 @@ public class WeatherServiceImpl implements WeatherService {
         this.validator = validator;
     }
 
+    /**
+     * Helper method to create WeatherData object
+     *
+     * @param documentContext
+     * @param cityName
+     * @param country
+     * @param unix
+     * @param timezone
+     * @return
+     */
     private WeatherData createWeatherData(DocumentContext documentContext, String cityName, String country, Long unix, Integer timezone) {
         if (unix == null) {
             Integer unixInt = documentContext.read("$.dt");
@@ -57,6 +72,13 @@ public class WeatherServiceImpl implements WeatherService {
         );
     }
 
+    /**
+     * Helper method to parse json string of weather forecasts and turn them
+     * into an List weather data objects
+     *
+     * @param documentContext
+     * @return
+     */
     private List<WeatherData> parseWeatherDataList(DocumentContext documentContext) {
         List<WeatherData> weatherDataList = new ArrayList<>();
         String cityName = documentContext.read("$.city.name");
@@ -75,6 +97,11 @@ public class WeatherServiceImpl implements WeatherService {
         return weatherDataList;
     }
 
+    /**
+     * Prints weather data object for testing
+     *
+     * @param weatherData
+     */
     private void printWeatherData(WeatherData weatherData) {
         System.out.println("City: " + weatherData.getCityName());
         System.out.println("Country: " + weatherData.getCountry());
@@ -84,11 +111,24 @@ public class WeatherServiceImpl implements WeatherService {
         System.out.println("As of Local Time: " + weatherData.getFormattedDateTime());
     }
 
+    /**
+     * Method for getting weather data using city as parameter. The method
+     * default unit and language values are metric and english, respectively.
+     */
     @Override
     public WeatherDataDTO getWeatherByCity(String city) {
         return getWeatherByCity(city, null, null);
     }
 
+    /**
+     * Method for getting weather data using multiple parameters to retrive
+     * weather data. In adition to the city, users can choose imperial, metric,
+     * and openweathermap api standard unit; please see
+     * constants/ValidUnits.java for details. Method also accepts different
+     * languages to choose from as parameter Please see
+     * constants/ValidLanguage.java for details
+     *
+     */
     @Override
     public WeatherDataDTO getWeatherByCity(String city, String units, String lang) {
 
@@ -116,13 +156,30 @@ public class WeatherServiceImpl implements WeatherService {
         }
     }
 
+    /**
+     * Deprecated. Method for calling 3hr/5days weather forecast (total of 40
+     * weather data objects with 3-hour interval). The method default unit and
+     * language values are metric and english, respectively.
+     *
+     */
+    @Deprecated
     @Override
-    public List<WeatherDataDTO> getWeather3HourForecastByCity(String city) {
-        return getWeather3HourForecastByCity(city, null, null);
+    public List<WeatherDataDTO> getListWeather3Hr5dayForecastByCity(String city) {
+        return getListWeather3Hr5dayForecastByCity(city, null, null);
     }
 
+    /**
+     * Deprecated. Method for calling 3hr/5days weather forecast (total of 40
+     * weather data objects with 3-hour interval). In adition to the city, users
+     * can choose imperial, metric, and openweathermap api standard unit; please
+     * see constants/ValidUnits.java for details. Method also accepts different
+     * languages to choose from as parameter Please see
+     * constants/ValidLanguage.java for details
+     *
+     */
+    @Deprecated
     @Override
-    public List<WeatherDataDTO> getWeather3HourForecastByCity(String city, String units, String lang) {
+    public List<WeatherDataDTO> getListWeather3Hr5dayForecastByCity(String city, String units, String lang) {
 
         validator.validateCity(city);
         units = validator.validateUnitOfMeasurement(units);
@@ -154,6 +211,46 @@ public class WeatherServiceImpl implements WeatherService {
         } catch (RestClientException ex) {
             throw new RuntimeException("Error fetching weather data.", ex);
         }
+    }
+
+    /**
+     * Method to replace `getWeather3HourForecastByCity(String city)` Return a
+     * paginated weather forecast. The method default unit and language values
+     * are metric and english, respectively.
+     *
+     */
+    @Override
+    public Page<WeatherDataDTO> getSortedWeather3Hr5dayForecastByCity(String city, int page, int size) {
+        return getSortedWeather3Hr5dayForecastByCity(city, null, null, page, size);
+    }
+
+    /**
+     * Method to replace `getWeather3HourForecastByCity(String city, String
+     * units, String lang)` Return a paginated weather forecast. The method
+     * default unit and language values are metric and english, respectively.
+     *
+     */
+    @Override
+    public Page<WeatherDataDTO> getSortedWeather3Hr5dayForecastByCity(String city, String units, String lang, int page, int size) {
+        List<WeatherDataDTO> sortedWeatherDataDTOs = getListWeather3Hr5dayForecastByCity(city, units, lang).stream()
+                .sorted(Comparator.comparing(WeatherDataDTO::getFormattedDateTime))
+                .collect(Collectors.toList());
+
+        int pageSize = size >= 1 ? size : 8;
+        int currentPage = page >= 0 ? page : 0;
+        int startItem = currentPage * pageSize;
+
+        List<WeatherDataDTO> pagedData;
+
+        if (sortedWeatherDataDTOs.size() < startItem) {
+            pagedData = List.of();
+        } else {
+            int toIndex = Math.min(startItem + pageSize, sortedWeatherDataDTOs.size());
+            pagedData = sortedWeatherDataDTOs.subList(startItem, toIndex);
+        }
+
+        Pageable pageable = PageRequest.of(currentPage, pageSize);
+        return new PageImpl<>(pagedData, pageable, sortedWeatherDataDTOs.size());
     }
 
 }
