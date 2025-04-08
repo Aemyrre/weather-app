@@ -1,0 +1,62 @@
+/***********************/
+/* HTML WEATHER APP BACKGROUND */
+/***********************/
+
+.main-background {
+}
+
+/* 
+--- 01 Typography System
+
+    - Font Syze System (px)
+        10 / 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 44 / 52 / 62 / 74 / 86 / 98
+
+    - Font Weights: 
+        Default: 400
+        Medium: 500
+        Semi-bold: 600
+        Bold: 700
+
+    - Line Heights:
+        Default: 1
+        Small: 1.05
+        Medium: 1.2
+        Paragraph default: 1.6
+        Large: 1.8
+
+    - Letter Spacing:
+        0.5px
+        0.75px
+
+    --- 02 Colours
+
+    - Primary: #a5a58d (Call-to-action BG and Button Colours)
+      #D5D3DF
+    - Secondary: #d1e0e5
+    - Tints:
+        #edede8
+        #dbdbd1
+        
+    - Shades: 
+        #898e7c
+        
+        
+    - Greys: 
+        #555
+
+        - Illustration:
+        
+        - Others:
+    --- 05 Shadows
+
+    --- 06 Border Radius
+        Default: 9px
+        Medium: 11px
+
+
+    --- 07 Whitespace
+    
+    - SPACING SYSTEM (px)
+        2 / 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 / 128
+
+*/
