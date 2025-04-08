@@ -59,6 +59,7 @@ public class WeatherServiceImpl implements WeatherService {
                 cityName != null ? cityName : documentContext.read("$.name"),
                 country != null ? country : documentContext.read("$.sys.country"),
                 documentContext.read("$.weather[0].id"),
+                documentContext.read("$.weather[0].main"),
                 documentContext.read("$.weather[0].description"),
                 documentContext.read("$.weather[0].icon"),
                 new BigDecimal(documentContext.read("$.main.temp").toString()),
@@ -106,6 +107,7 @@ public class WeatherServiceImpl implements WeatherService {
         System.out.println("City: " + weatherData.getCityName());
         System.out.println("Country: " + weatherData.getCountry());
         System.out.println("Temperature: " + weatherData.getTemperature());
+        System.out.println("Main Weather Decsription: " + weatherData.getWeatherMainDescription());
         System.out.println("Weather Description: " + weatherData.getWeatherDescription());
         System.out.println("Wind Speed: " + weatherData.getWindSpeed());
         System.out.println("As of Local Time: " + weatherData.getFormattedDateTime());

@@ -9,6 +9,7 @@ public class WeatherDataDTO {
     private String country;
 
     private int weatherId;
+    private String weatherMainDescription;
     private String weatherDescription;
     private String weatherIcon;
 
@@ -29,6 +30,7 @@ public class WeatherDataDTO {
         this.cityName = source.getCityName();
         this.country = source.getCountry();
         this.weatherId = source.getWeatherId();
+        this.weatherMainDescription = source.getWeatherMainDescription();
         this.weatherDescription = source.getWeatherDescription();
         this.weatherIcon = source.getWeatherIcon();
         this.temperature = source.getTemperature();
@@ -50,6 +52,10 @@ public class WeatherDataDTO {
 
     public int getWeatherId() {
         return this.weatherId;
+    }
+
+    public String getWeatherMainDescription() {
+        return this.weatherMainDescription;
     }
 
     public String getWeatherDescription() {
@@ -97,18 +103,18 @@ public class WeatherDataDTO {
             return false;
         }
         WeatherDataDTO weatherDataDTO = (WeatherDataDTO) o;
-        return Objects.equals(cityName, weatherDataDTO.cityName) && Objects.equals(country, weatherDataDTO.country) && weatherId == weatherDataDTO.weatherId && Objects.equals(weatherDescription, weatherDataDTO.weatherDescription) && Objects.equals(weatherIcon, weatherDataDTO.weatherIcon) && Objects.equals(temperature, weatherDataDTO.temperature) && Objects.equals(tempFeelsLike, weatherDataDTO.tempFeelsLike) && Objects.equals(minTemp, weatherDataDTO.minTemp) && Objects.equals(maxTemp, weatherDataDTO.maxTemp) && humidity == weatherDataDTO.humidity && Objects.equals(windSpeed, weatherDataDTO.windSpeed) && Objects.equals(formattedDateTime, weatherDataDTO.formattedDateTime);
+        return Objects.equals(cityName, weatherDataDTO.cityName) && Objects.equals(country, weatherDataDTO.country) && weatherId == weatherDataDTO.weatherId && Objects.equals(weatherMainDescription, weatherDataDTO.weatherMainDescription) && Objects.equals(weatherDescription, weatherDataDTO.weatherDescription) && Objects.equals(weatherIcon, weatherDataDTO.weatherIcon) && Objects.equals(temperature, weatherDataDTO.temperature) && Objects.equals(tempFeelsLike, weatherDataDTO.tempFeelsLike) && Objects.equals(minTemp, weatherDataDTO.minTemp) && Objects.equals(maxTemp, weatherDataDTO.maxTemp) && humidity == weatherDataDTO.humidity && Objects.equals(windSpeed, weatherDataDTO.windSpeed) && Objects.equals(formattedDateTime, weatherDataDTO.formattedDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cityName, country, weatherId, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
+        return Objects.hash(cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
     }
 
     @Override
     public String toString() {
-        String str = String.format("WeatherData{city:'%s', country:'%s', weatherId:'%s', weatherDescription:'%s', weatherIcon:'%s', temperature:'%s', tempFeelsLike:'%s', minTemp:'%s', maxTemp:'%s', humidity:'%s', windSpeed:'%s', formattedDateTime:'%s'}",
-                cityName, country, weatherId, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
+        String str = String.format("WeatherData{city:'%s', country:'%s', weatherId:'%s', weatherMainDescription:'%s', weatherDescription:'%s', weatherIcon:'%s', temperature:'%s', tempFeelsLike:'%s', minTemp:'%s', maxTemp:'%s', humidity:'%s', windSpeed:'%s', formattedDateTime:'%s'}",
+                cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
         return str;
     }
 
