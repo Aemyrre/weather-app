@@ -264,4 +264,49 @@ public class WeatherServiceIntegrationTest {
         assertEquals(5, weatherDataDTOs.getTotalPages());
     }
 
+    @Test
+    void getWeatherByCoordinates() throws Exception {
+        double lat = 14.5377;
+        double lon = 121.0008;
+
+        String expectedCity = "Makati City";
+        String expectedCountry = "PH";
+
+        WeatherDataDTO weatherDataDTO = weatherService.getWeatherByCoordinates(lat, lon);
+
+        assertEquals(expectedCity.toLowerCase(), weatherDataDTO.getCityName().toLowerCase());
+        assertEquals(expectedCountry.toLowerCase(), weatherDataDTO.getCountry().toLowerCase());
+        assertNotNull(weatherDataDTO.getWeatherMainDescription());
+        assertNotNull(weatherDataDTO.getWeatherDescription());
+    }
+
+    @Test
+    void getWeatherByCoordinates_usingImperialSystem_andSpanishLanguage() throws Exception {
+        double lat = 14.5377;
+        double lon = 121.0008;
+        String lang = "es";
+        String uom = "imperial";
+
+        String expectedCity = "Makati City";
+        String expectedCountry = "PH";
+
+        WeatherDataDTO weatherDataDTO = weatherService.getWeatherByCoordinates(lat, lon, uom, lang);
+
+        assertEquals(expectedCity.toLowerCase(), weatherDataDTO.getCityName().toLowerCase());
+        assertEquals(expectedCountry.toLowerCase(), weatherDataDTO.getCountry().toLowerCase());
+        assertNotNull(weatherDataDTO.getWeatherMainDescription());
+        assertNotNull(weatherDataDTO.getWeatherDescription());
+    }
+
+    @Test
+    void getWeatherByCoordinates_invalidLatAndLon_throwException() {
+        double lat = -90.99;
+        double lon = 180.11;
+
+        String expectedErrorResponse = "City not found";
+
+        CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getWeatherByCoordinates(lat, lon));
+
+        assertEquals(expectedErrorResponse, ex.getMessage());
+    }
 }

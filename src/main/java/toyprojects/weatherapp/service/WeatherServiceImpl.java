@@ -139,7 +139,50 @@ public class WeatherServiceImpl implements WeatherService {
         lang = validator.validateLanguage(lang);
 
         try {
-            String url = String.format("%s%s%s%s%s%s%s%s", "https://api.openweathermap.org/data/2.5/weather?q=", city, "&appid=", apiKey, "&units=", units, "&lang=", lang);
+            String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=%s&lang=%s", city, apiKey, units, lang);
+            String jsonRequest = restTemplate.getForObject(url, String.class);
+            DocumentContext documentContext = JsonPath.parse(jsonRequest);
+
+            System.out.println(jsonRequest);
+            WeatherData weatherData = createWeatherData(documentContext, null, null, null, null);
+
+            printWeatherData(weatherData);
+
+            return new WeatherDataDTO(weatherData);
+        } catch (HttpClientErrorException.NotFound ex) {
+            throw new CityNotFoundException();
+        } catch (HttpClientErrorException.Unauthorized ex) {
+            throw new InvalidApiKeyException();
+        } catch (RestClientException ex) {
+            throw new RuntimeException("Error fetching weather data.", ex);
+        }
+    }
+
+    /**
+     * Method for getting weather data using lattitude and longitude as
+     * parameters. The method default unit and language values are metric and
+     * english, respectively.
+     */
+    @Override
+    public WeatherDataDTO getWeatherByCoordinates(double lat, double lon) {
+        return getWeatherByCoordinates(lat, lon, null, null);
+    }
+
+    /**
+     * Method for getting weather data using multiple parameters to retrive
+     * weather data. In adition to lattitude and longitude, users can choose
+     * imperial, metric, and openweathermap api standard unit; please see
+     * constants/ValidUnits.java for details. Method also accepts different
+     * languages to choose from as parameter Please see
+     * constants/ValidLanguage.java for details
+     *
+     */
+    @Override
+    public WeatherDataDTO getWeatherByCoordinates(double lat, double lon, String units, String lang) {
+        validator.validateCoordinates(lat, lon);
+
+        try {
+            String url = String.format("https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=%s&lang=%s", lat, lon, apiKey, units, lang);
             String jsonRequest = restTemplate.getForObject(url, String.class);
             DocumentContext documentContext = JsonPath.parse(jsonRequest);
 

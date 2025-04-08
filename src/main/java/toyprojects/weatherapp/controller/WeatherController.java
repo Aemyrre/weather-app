@@ -132,4 +132,14 @@ public class WeatherController {
     //     List<WeatherDataDTO> weatherDataDTOs = new ArrayList<>();
     //     return ResponseEntity.ok(weatherDataDTOs);
     // }
+    /**
+     *
+     * @param weatherTime
+     * @return String time of day
+     *
+     * helper method to determine the time of day for frontend background
+     */
+    private String getTimeOfDay(String weatherTime) {
+        return weatherTime.contains("am") ? "day" : "night";
+    }
 }

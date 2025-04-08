@@ -34,7 +34,7 @@ public class WeatherData {
         this.cityName = cityName;
         this.country = country;
         this.weatherId = weatherId;
-        this.weatherMainDescription = weatherMainDescription;
+        this.weatherMainDescription = weatherMainDescription.toLowerCase();
         this.weatherDescription = weatherDescription;
         this.weatherIcon = weatherIcon;
         this.temperature = temperature;
@@ -49,7 +49,7 @@ public class WeatherData {
     private String convertUnixToDateTime(Long unixTime, Integer timeZone) {
         Instant instant = Instant.ofEpochSecond(unixTime);
         ZonedDateTime dateTime = instant.atZone(ZoneOffset.ofTotalSeconds(timeZone));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a");
 
         return String.format("%s", dateTime.format(formatter));
     }
@@ -79,7 +79,7 @@ public class WeatherData {
     }
 
     public String getWeatherMainDescription() {
-        return this.weatherMainDescription;
+        return this.weatherMainDescription.toLowerCase();
     }
 
     public void setWeatherMainDescription(String weatherMainDescription) {

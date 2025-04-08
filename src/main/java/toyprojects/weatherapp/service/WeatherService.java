@@ -12,6 +12,10 @@ public interface WeatherService {
 
     WeatherDataDTO getWeatherByCity(String city, String units, String lang);
 
+    WeatherDataDTO getWeatherByCoordinates(double lat, double lon);
+
+    WeatherDataDTO getWeatherByCoordinates(double lat, double lon, String units, String lang);
+
     @Deprecated
     List<WeatherDataDTO> getListWeather3Hr5dayForecastByCity(String city);
 
