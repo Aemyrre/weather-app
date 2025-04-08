@@ -13,6 +13,7 @@ public class WeatherData {
     private String country;
 
     private int weatherId;
+    private String weatherMainDescription;
     private String weatherDescription;
     private String weatherIcon;
 
@@ -29,10 +30,11 @@ public class WeatherData {
     public WeatherData() {
     }
 
-    public WeatherData(String cityName, String country, int weatherId, String weatherDescription, String weatherIcon, BigDecimal temperature, BigDecimal tempFeelsLike, BigDecimal minTemp, BigDecimal maxTemp, int humidity, BigDecimal windSpeed, Long unix, Integer timezone) {
+    public WeatherData(String cityName, String country, int weatherId, String weatherMainDescription, String weatherDescription, String weatherIcon, BigDecimal temperature, BigDecimal tempFeelsLike, BigDecimal minTemp, BigDecimal maxTemp, int humidity, BigDecimal windSpeed, Long unix, Integer timezone) {
         this.cityName = cityName;
         this.country = country;
         this.weatherId = weatherId;
+        this.weatherMainDescription = weatherMainDescription;
         this.weatherDescription = weatherDescription;
         this.weatherIcon = weatherIcon;
         this.temperature = temperature;
@@ -74,6 +76,14 @@ public class WeatherData {
 
     public void setWeatherId(int weatherId) {
         this.weatherId = weatherId;
+    }
+
+    public String getWeatherMainDescription() {
+        return this.weatherMainDescription;
+    }
+
+    public void setWeatherMainDescription(String weatherMainDescription) {
+        this.weatherMainDescription = weatherMainDescription;
     }
 
     public String getWeatherDescription() {
@@ -157,7 +167,7 @@ public class WeatherData {
             return false;
         }
         WeatherData weatherData = (WeatherData) o;
-        return Objects.equals(cityName, weatherData.cityName) && Objects.equals(country, weatherData.country) && weatherId == weatherData.weatherId && Objects.equals(weatherDescription, weatherData.weatherDescription) && Objects.equals(weatherIcon, weatherData.weatherIcon) && Objects.equals(temperature, weatherData.temperature) && Objects.equals(tempFeelsLike, weatherData.tempFeelsLike) && Objects.equals(minTemp, weatherData.minTemp) && Objects.equals(maxTemp, weatherData.maxTemp) && humidity == weatherData.humidity && Objects.equals(windSpeed, weatherData.windSpeed) && Objects.equals(formattedDateTime, weatherData.formattedDateTime);
+        return Objects.equals(cityName, weatherData.cityName) && Objects.equals(country, weatherData.country) && weatherId == weatherData.weatherId && Objects.equals(weatherMainDescription, weatherData.weatherMainDescription) && Objects.equals(weatherDescription, weatherData.weatherDescription) && Objects.equals(weatherIcon, weatherData.weatherIcon) && Objects.equals(temperature, weatherData.temperature) && Objects.equals(tempFeelsLike, weatherData.tempFeelsLike) && Objects.equals(minTemp, weatherData.minTemp) && Objects.equals(maxTemp, weatherData.maxTemp) && humidity == weatherData.humidity && Objects.equals(windSpeed, weatherData.windSpeed) && Objects.equals(formattedDateTime, weatherData.formattedDateTime);
     }
 
     @Override
@@ -167,8 +177,8 @@ public class WeatherData {
 
     @Override
     public String toString() {
-        String str = String.format("WeatherData{city:'%s', country:'%s', weatherId:'%s', weatherDescription:'%s', weatherIcon:'%s', temperature:'%s', tempFeelsLike:'%s', minTemp:'%s', maxTemp:'%s', humidity:'%s', windSpeed:'%s', formattedDateTime:'%s'}",
-                cityName, country, weatherId, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
+        String str = String.format("WeatherData{city:'%s', country:'%s', weatherId:'%s', weatherMainDescription:'%s', weatherDescription:'%s', weatherIcon:'%s', temperature:'%s', tempFeelsLike:'%s', minTemp:'%s', maxTemp:'%s', humidity:'%s', windSpeed:'%s', formattedDateTime:'%s'}",
+                cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
         return str;
     }
 
