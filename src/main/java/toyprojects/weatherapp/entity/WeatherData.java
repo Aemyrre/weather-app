@@ -1,6 +1,5 @@
 package toyprojects.weatherapp.entity;
 
-import java.math.BigDecimal;
 import java.time.Instant;
 import java.time.ZoneOffset;
 import java.time.ZonedDateTime;
@@ -17,39 +16,39 @@ public class WeatherData {
     private String weatherDescription;
     private String weatherIcon;
 
-    private BigDecimal temperature;
-    private BigDecimal tempFeelsLike;
-    private BigDecimal minTemp;
-    private BigDecimal maxTemp;
+    private int temperature;
+    private int tempFeelsLike;
+    private int minTemp;
+    private int maxTemp;
     private int humidity;
 
-    private BigDecimal windSpeed;
+    private int windSpeed;
 
     private String formattedDateTime;
 
     public WeatherData() {
     }
 
-    public WeatherData(String cityName, String country, int weatherId, String weatherMainDescription, String weatherDescription, String weatherIcon, BigDecimal temperature, BigDecimal tempFeelsLike, BigDecimal minTemp, BigDecimal maxTemp, int humidity, BigDecimal windSpeed, Long unix, Integer timezone) {
+    public WeatherData(String cityName, String country, int weatherId, String weatherMainDescription, String weatherDescription, String weatherIcon, double temperature, double tempFeelsLike, double minTemp, double maxTemp, int humidity, double windSpeed, Long unix, Integer timezone) {
         this.cityName = cityName;
         this.country = country;
         this.weatherId = weatherId;
         this.weatherMainDescription = weatherMainDescription.toLowerCase();
         this.weatherDescription = weatherDescription;
         this.weatherIcon = weatherIcon;
-        this.temperature = temperature;
-        this.tempFeelsLike = tempFeelsLike;
-        this.minTemp = minTemp;
-        this.maxTemp = maxTemp;
+        this.temperature = (int) Math.round(temperature);
+        this.tempFeelsLike = (int) Math.round(tempFeelsLike);
+        this.minTemp = (int) Math.round(minTemp);
+        this.maxTemp = (int) Math.round(maxTemp);
         this.humidity = humidity;
-        this.windSpeed = windSpeed;
+        this.windSpeed = (int) Math.round(windSpeed);
         this.formattedDateTime = convertUnixToDateTime(unix, timezone);
     }
 
     private String convertUnixToDateTime(Long unixTime, Integer timeZone) {
         Instant instant = Instant.ofEpochSecond(unixTime);
         ZonedDateTime dateTime = instant.atZone(ZoneOffset.ofTotalSeconds(timeZone));
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss a");
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a");
 
         return String.format("%s", dateTime.format(formatter));
     }
@@ -102,35 +101,35 @@ public class WeatherData {
         this.weatherIcon = weatherIcon;
     }
 
-    public BigDecimal getTemperature() {
+    public int getTemperature() {
         return this.temperature;
     }
 
-    public void setTemperature(BigDecimal temperature) {
+    public void setTemperature(int temperature) {
         this.temperature = temperature;
     }
 
-    public BigDecimal getTempFeelsLike() {
+    public int getTempFeelsLike() {
         return this.tempFeelsLike;
     }
 
-    public void setTempFeelsLike(BigDecimal tempFeelsLike) {
+    public void setTempFeelsLike(int tempFeelsLike) {
         this.tempFeelsLike = tempFeelsLike;
     }
 
-    public BigDecimal getMinTemp() {
+    public int getMinTemp() {
         return this.minTemp;
     }
 
-    public void setMinTemp(BigDecimal minTemp) {
+    public void setMinTemp(int minTemp) {
         this.minTemp = minTemp;
     }
 
-    public BigDecimal getMaxTemp() {
+    public int getMaxTemp() {
         return this.maxTemp;
     }
 
-    public void setMaxTemp(BigDecimal maxTemp) {
+    public void setMaxTemp(int maxTemp) {
         this.maxTemp = maxTemp;
     }
 
@@ -142,11 +141,11 @@ public class WeatherData {
         this.humidity = humidity;
     }
 
-    public BigDecimal getWindSpeed() {
+    public int getWindSpeed() {
         return this.windSpeed;
     }
 
-    public void setWindSpeed(BigDecimal windSpeed) {
+    public void setWindSpeed(int windSpeed) {
         this.windSpeed = windSpeed;
     }
 

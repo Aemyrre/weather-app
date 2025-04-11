@@ -1,6 +1,5 @@
 package toyprojects.weatherapp.entity;
 
-import java.math.BigDecimal;
 import java.util.Objects;
 
 public class WeatherDataDTO {
@@ -13,13 +12,13 @@ public class WeatherDataDTO {
     private String weatherDescription;
     private String weatherIcon;
 
-    private BigDecimal temperature;
-    private BigDecimal tempFeelsLike;
-    private BigDecimal minTemp;
-    private BigDecimal maxTemp;
+    private int temperature;
+    private int tempFeelsLike;
+    private int minTemp;
+    private int maxTemp;
     private int humidity;
 
-    private BigDecimal windSpeed;
+    private int windSpeed;
 
     private String formattedDateTime;
 
@@ -66,19 +65,19 @@ public class WeatherDataDTO {
         return this.weatherIcon;
     }
 
-    public BigDecimal getTemperature() {
+    public int getTemperature() {
         return this.temperature;
     }
 
-    public BigDecimal getTempFeelsLike() {
+    public int getTempFeelsLike() {
         return this.tempFeelsLike;
     }
 
-    public BigDecimal getMinTemp() {
+    public int getMinTemp() {
         return this.minTemp;
     }
 
-    public BigDecimal getMaxTemp() {
+    public int getMaxTemp() {
         return this.maxTemp;
     }
 
@@ -86,7 +85,7 @@ public class WeatherDataDTO {
         return this.humidity;
     }
 
-    public BigDecimal getWindSpeed() {
+    public int getWindSpeed() {
         return this.windSpeed;
     }
 
