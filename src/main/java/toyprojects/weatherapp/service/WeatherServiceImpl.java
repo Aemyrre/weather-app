@@ -1,16 +1,12 @@
 package toyprojects.weatherapp.service;
 
-import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageImpl;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -31,12 +27,121 @@ public class WeatherServiceImpl implements WeatherService {
     @Value("${weather.api.key}")
     private String apiKey;
 
+    @Value("${openweathermap.api.baseurl}")
+    private String baseURL;
+
     private final RestTemplate restTemplate;
     private final WeatherParameterValidation validator;
+
+    private static final Logger logger = LoggerFactory.getLogger(WeatherServiceImpl.class);
 
     public WeatherServiceImpl(RestTemplate restTemplate, WeatherParameterValidation validator) {
         this.restTemplate = restTemplate;
         this.validator = validator;
+    }
+
+    /**
+     * Fetches weather forecast data using city name for the controller
+     *
+     * @param city
+     * @param units
+     * @param lang
+     *
+     * @return List<WeatherDataDTO>
+     *
+     */
+    @Override
+    public List<WeatherDataDTO> getListWeatherForecastByCity(String city, String units, String lang) {
+        validator.validateCity(city);
+        units = validator.validateUnitOfMeasurement(units);
+        lang = validator.validateLanguage(lang);
+
+        logger.info("Fetching weather forecast for city: {}", city);
+        String url = String.format("%s?q=%s&appid=%s&units=%s&lang=%s", baseURL, city, apiKey, units, lang);
+
+        return fetchWeatherData(url);
+    }
+
+    /**
+     * Fetches weather forecast data using coordinates for the controller
+     *
+     * @param lat
+     * @param lon
+     * @param units
+     * @param lang
+     *
+     * @return List<WeatherDataDTO>
+     *
+     */
+    @Override
+    public List<WeatherDataDTO> getListWeatherForecastByCoordinates(double lat, double lon, String units, String lang) {
+        validator.validateCoordinates(lat, lon);
+        units = validator.validateUnitOfMeasurement(units);
+        lang = validator.validateLanguage(lang);
+
+        logger.info("Fetching weather data for coordinates: lat={}, lon={}", lat, lon);
+        String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", baseURL, lat, lon, apiKey, units, lang);
+
+        return fetchWeatherData(url);
+    }
+
+    /**
+     * Helper method for fetching weather forecast data
+     *
+     * @param url
+     * @return List<WeatherDataDTO>
+     */
+    private List<WeatherDataDTO> fetchWeatherData(String url) {
+        try {
+            String jsonRequest = restTemplate.getForObject(url, String.class);
+            DocumentContext documentContext = JsonPath.parse(jsonRequest);
+
+            logger.debug("JSON response received: {}", jsonRequest);
+            List<WeatherData> weatherDataList = parseWeatherDataList(documentContext);
+
+            for (int i = 0; i < weatherDataList.size(); i++) {
+                logger.debug("Weather data object No. {}: {}", i, weatherDataList.get(i));
+            }
+
+            return weatherDataList.stream()
+                    .map(WeatherDataDTO::new)
+                    .collect(Collectors.toList());
+
+        } catch (HttpClientErrorException.NotFound ex) {
+            logger.error("Coordinates not found: url={}", url, ex);
+            throw new CityNotFoundException();
+        } catch (HttpClientErrorException.Unauthorized ex) {
+            logger.error("Invalid API key used for coordinates: url={}", url, ex);
+            throw new InvalidApiKeyException();
+        } catch (RestClientException ex) {
+            logger.error("Error fetching weather data for URL: {} with exception: {}", url, ex.getMessage(), ex);
+            throw new RuntimeException("Error fetching weather data.", ex);
+        }
+    }
+
+    /**
+     * Helper method to parse json string of weather forecasts and turn them
+     * into an List weather data objects
+     *
+     * @param documentContext
+     * @return
+     */
+    private List<WeatherData> parseWeatherDataList(DocumentContext documentContext) {
+        List<WeatherData> weatherDataList = new ArrayList<>();
+        String cityName = documentContext.read("$.city.name");
+        String country = documentContext.read("$.city.country");
+        Integer timezone = documentContext.read("$.city.timezone");
+
+        List<Object> weatherList = documentContext.read("$.list[*]");
+
+        for (int i = 0; i < Math.min(11, weatherList.size()); i++) {
+            DocumentContext documentContextWeather = JsonPath.parse(weatherList.get(i));
+            Integer dt = documentContextWeather.read("$.dt");
+            Long unix = dt.longValue();
+            weatherDataList.add(createWeatherData(documentContextWeather, cityName, country, unix, timezone));
+        }
+
+        return weatherDataList;
     }
 
     /**
@@ -62,240 +167,14 @@ public class WeatherServiceImpl implements WeatherService {
                 documentContext.read("$.weather[0].main"),
                 documentContext.read("$.weather[0].description"),
                 documentContext.read("$.weather[0].icon"),
-                new BigDecimal(documentContext.read("$.main.temp").toString()),
-                new BigDecimal(documentContext.read("$.main.feels_like").toString()),
-                new BigDecimal(documentContext.read("$.main.temp_min").toString()),
-                new BigDecimal(documentContext.read("$.main.temp_max").toString()),
+                ((Number) documentContext.read("$.main.temp")).doubleValue(),
+                ((Number) documentContext.read("$.main.feels_like")).doubleValue(),
+                ((Number) documentContext.read("$.main.temp_min")).doubleValue(),
+                ((Number) documentContext.read("$.main.temp_max")).doubleValue(),
                 documentContext.read("$.main.humidity"),
-                new BigDecimal(documentContext.read("$.wind.speed").toString()),
+                ((Number) documentContext.read("$.wind.speed")).doubleValue(),
                 unix,
                 timezone != null ? timezone : documentContext.read("$.timezone")
         );
     }
-
-    /**
-     * Helper method to parse json string of weather forecasts and turn them
-     * into an List weather data objects
-     *
-     * @param documentContext
-     * @return
-     */
-    private List<WeatherData> parseWeatherDataList(DocumentContext documentContext) {
-        List<WeatherData> weatherDataList = new ArrayList<>();
-        String cityName = documentContext.read("$.city.name");
-        String country = documentContext.read("$.city.country");
-        Integer timezone = documentContext.read("$.city.timezone");
-
-        List<Object> weatherList = documentContext.read("$.list[*]");
-
-        for (Object weather : weatherList) {
-            DocumentContext documentContextWeather = JsonPath.parse(weather);
-            Integer dt = JsonPath.parse(weather).read("$.dt");
-            Long unix = dt.longValue();
-            weatherDataList.add(createWeatherData(documentContextWeather, cityName, country, unix, timezone));
-        }
-
-        return weatherDataList;
-    }
-
-    /**
-     * Prints weather data object for testing
-     *
-     * @param weatherData
-     */
-    private void printWeatherData(WeatherData weatherData) {
-        System.out.println("City: " + weatherData.getCityName());
-        System.out.println("Country: " + weatherData.getCountry());
-        System.out.println("Temperature: " + weatherData.getTemperature());
-        System.out.println("Main Weather Decsription: " + weatherData.getWeatherMainDescription());
-        System.out.println("Weather Description: " + weatherData.getWeatherDescription());
-        System.out.println("Wind Speed: " + weatherData.getWindSpeed());
-        System.out.println("As of Local Time: " + weatherData.getFormattedDateTime());
-    }
-
-    /**
-     * Method for getting weather data using city as parameter. The method
-     * default unit and language values are metric and english, respectively.
-     */
-    @Override
-    public WeatherDataDTO getWeatherByCity(String city) {
-        return getWeatherByCity(city, null, null);
-    }
-
-    /**
-     * Method for getting weather data using multiple parameters to retrive
-     * weather data. In adition to the city, users can choose imperial, metric,
-     * and openweathermap api standard unit; please see
-     * constants/ValidUnits.java for details. Method also accepts different
-     * languages to choose from as parameter Please see
-     * constants/ValidLanguage.java for details
-     *
-     */
-    @Override
-    public WeatherDataDTO getWeatherByCity(String city, String units, String lang) {
-
-        validator.validateCity(city);
-        units = validator.validateUnitOfMeasurement(units);
-        lang = validator.validateLanguage(lang);
-
-        try {
-            String url = String.format("https://api.openweathermap.org/data/2.5/weather?q=%s&appid=%s&units=%s&lang=%s", city, apiKey, units, lang);
-            String jsonRequest = restTemplate.getForObject(url, String.class);
-            DocumentContext documentContext = JsonPath.parse(jsonRequest);
-
-            System.out.println(jsonRequest);
-            WeatherData weatherData = createWeatherData(documentContext, null, null, null, null);
-
-            printWeatherData(weatherData);
-
-            return new WeatherDataDTO(weatherData);
-        } catch (HttpClientErrorException.NotFound ex) {
-            throw new CityNotFoundException();
-        } catch (HttpClientErrorException.Unauthorized ex) {
-            throw new InvalidApiKeyException();
-        } catch (RestClientException ex) {
-            throw new RuntimeException("Error fetching weather data.", ex);
-        }
-    }
-
-    /**
-     * Method for getting weather data using lattitude and longitude as
-     * parameters. The method default unit and language values are metric and
-     * english, respectively.
-     */
-    @Override
-    public WeatherDataDTO getWeatherByCoordinates(double lat, double lon) {
-        return getWeatherByCoordinates(lat, lon, null, null);
-    }
-
-    /**
-     * Method for getting weather data using multiple parameters to retrive
-     * weather data. In adition to lattitude and longitude, users can choose
-     * imperial, metric, and openweathermap api standard unit; please see
-     * constants/ValidUnits.java for details. Method also accepts different
-     * languages to choose from as parameter Please see
-     * constants/ValidLanguage.java for details
-     *
-     */
-    @Override
-    public WeatherDataDTO getWeatherByCoordinates(double lat, double lon, String units, String lang) {
-        validator.validateCoordinates(lat, lon);
-
-        try {
-            String url = String.format("https://api.openweathermap.org/data/2.5/weather?lat=%s&lon=%s&appid=%s&units=%s&lang=%s", lat, lon, apiKey, units, lang);
-            String jsonRequest = restTemplate.getForObject(url, String.class);
-            DocumentContext documentContext = JsonPath.parse(jsonRequest);
-
-            System.out.println(jsonRequest);
-            WeatherData weatherData = createWeatherData(documentContext, null, null, null, null);
-
-            printWeatherData(weatherData);
-
-            return new WeatherDataDTO(weatherData);
-        } catch (HttpClientErrorException.NotFound ex) {
-            throw new CityNotFoundException();
-        } catch (HttpClientErrorException.Unauthorized ex) {
-            throw new InvalidApiKeyException();
-        } catch (RestClientException ex) {
-            throw new RuntimeException("Error fetching weather data.", ex);
-        }
-    }
-
-    /**
-     * Deprecated. Method for calling 3hr/5days weather forecast (total of 40
-     * weather data objects with 3-hour interval). The method default unit and
-     * language values are metric and english, respectively.
-     *
-     */
-    @Deprecated
-    @Override
-    public List<WeatherDataDTO> getListWeather3Hr5dayForecastByCity(String city) {
-        return getListWeather3Hr5dayForecastByCity(city, null, null);
-    }
-
-    /**
-     * Deprecated. Method for calling 3hr/5days weather forecast (total of 40
-     * weather data objects with 3-hour interval). In adition to the city, users
-     * can choose imperial, metric, and openweathermap api standard unit; please
-     * see constants/ValidUnits.java for details. Method also accepts different
-     * languages to choose from as parameter Please see
-     * constants/ValidLanguage.java for details
-     *
-     */
-    @Deprecated
-    @Override
-    public List<WeatherDataDTO> getListWeather3Hr5dayForecastByCity(String city, String units, String lang) {
-
-        validator.validateCity(city);
-        units = validator.validateUnitOfMeasurement(units);
-        lang = validator.validateLanguage(lang);
-
-        try {
-            String url = String.format("%s%s%s%s%s%s%s%s", "https://api.openweathermap.org/data/2.5/forecast?q=", city, "&appid=", apiKey, "&units=", units, "&lang=", lang);
-            String jsonRequest = restTemplate.getForObject(url, String.class);
-            DocumentContext documentContext = JsonPath.parse(jsonRequest);
-
-            System.out.println(jsonRequest);
-            List<WeatherData> weatherDataList = parseWeatherDataList(documentContext);
-
-            int i = 0;
-            for (WeatherData weatherData : weatherDataList) {
-                System.out.println("No." + i++);
-                printWeatherData(weatherData);
-                System.out.println("-------------------");
-            }
-
-            return weatherDataList.stream()
-                    .map(WeatherDataDTO::new)
-                    .collect(Collectors.toList());
-
-        } catch (HttpClientErrorException.NotFound ex) {
-            throw new CityNotFoundException();
-        } catch (HttpClientErrorException.Unauthorized ex) {
-            throw new InvalidApiKeyException();
-        } catch (RestClientException ex) {
-            throw new RuntimeException("Error fetching weather data.", ex);
-        }
-    }
-
-    /**
-     * Method to replace `getWeather3HourForecastByCity(String city)` Return a
-     * paginated weather forecast. The method default unit and language values
-     * are metric and english, respectively.
-     *
-     */
-    @Override
-    public Page<WeatherDataDTO> getSortedWeather3Hr5dayForecastByCity(String city, int page, int size) {
-        return getSortedWeather3Hr5dayForecastByCity(city, null, null, page, size);
-    }
-
-    /**
-     * Method to replace `getWeather3HourForecastByCity(String city, String
-     * units, String lang)` Return a paginated weather forecast. The method
-     * default unit and language values are metric and english, respectively.
-     *
-     */
-    @Override
-    public Page<WeatherDataDTO> getSortedWeather3Hr5dayForecastByCity(String city, String units, String lang, int page, int size) {
-        List<WeatherDataDTO> sortedWeatherDataDTOs = getListWeather3Hr5dayForecastByCity(city, units, lang).stream()
-                .sorted(Comparator.comparing(WeatherDataDTO::getFormattedDateTime))
-                .collect(Collectors.toList());
-
-        int pageSize = size >= 1 ? size : 8;
-        int currentPage = page >= 0 ? page : 0;
-        int startItem = currentPage * pageSize;
-
-        List<WeatherDataDTO> pagedData;
-
-        if (sortedWeatherDataDTOs.size() < startItem) {
-            pagedData = List.of();
-        } else {
-            int toIndex = Math.min(startItem + pageSize, sortedWeatherDataDTOs.size());
-            pagedData = sortedWeatherDataDTOs.subList(startItem, toIndex);
-        }
-
-        Pageable pageable = PageRequest.of(currentPage, pageSize);
-        return new PageImpl<>(pagedData, pageable, sortedWeatherDataDTOs.size());
-    }
-
 }
