@@ -1,16 +1,17 @@
 package toyprojects.weatherapp.controller;
 
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.ModelAndView;
 
 import toyprojects.weatherapp.entity.WeatherDataDTO;
 import toyprojects.weatherapp.exception.CityNotFoundException;
-import toyprojects.weatherapp.exception.ErrorResponse;
 import toyprojects.weatherapp.service.WeatherService;
 
 @Controller
@@ -19,127 +20,78 @@ public class WeatherController {
 
     private final WeatherService weatherService;
 
+    private static final Logger logger = LoggerFactory.getLogger(WeatherController.class);
+
     public WeatherController(WeatherService weatherService) {
         this.weatherService = weatherService;
     }
 
     /**
-     * GET method for getting weather data by city. Returns a weather object DTO
-     * in json
-     *
-     * @param city
-     * @return
-     */
-    @GetMapping("/{city}")
-    public ResponseEntity<WeatherDataDTO> getWeatherByCity(@PathVariable String city) {
-        WeatherDataDTO getWeatherDataDTO = weatherService.getWeatherByCity(city);
-        return ResponseEntity.ok(getWeatherDataDTO);
-    }
-
-    /**
-     * GET method for getting weather data by city, unit of measurement, and
-     * language. Refer to `constants/` folder for details regarding unit of
-     * measurement and language.
+     * Controller method for fetching weather data using a city as parameter.
+     * units and language are optional. defaults: units: metric lang: en
      *
      * @param city
      * @param units
      * @param lang
-     * @return
+     * @return weather data, time of day and forecasts data to "index.html"
      */
-    @GetMapping
-    public ResponseEntity<WeatherDataDTO> getWeatherByCity(@RequestParam(required = false) String city,
+    @GetMapping("/search")
+    public ModelAndView getListWeatherForecastByCity(@RequestParam String city,
             @RequestParam(required = false, defaultValue = "metric") String units,
             @RequestParam(required = false, defaultValue = "en") String lang) {
 
-        if (city == null || city.trim().isEmpty()) {
-            handleEmptyCity();
+        if (city == null || city.isEmpty()) {
+            throw new CityNotFoundException();
         }
 
-        WeatherDataDTO getWeatherDataDTO = weatherService.getWeatherByCity(city, units, lang);
-        return ResponseEntity.ok(getWeatherDataDTO);
+        logger.info("Fetching weather data and preparing view model for city: {}", city);
+        List<WeatherDataDTO> weatherDataDTOs = weatherService.getListWeatherForecastByCity(city, units, lang);
+
+        return generateModelAndView(weatherDataDTOs);
     }
 
     /**
-     * GET method for getting weather data by city. Returns a weather forecast
-     * DTO by city in json. page and size are for pagination; however, they are
-     * not required.
+     * Controller method for fetching weather data using latitude and longitude
+     * as parameters. units and language are optional. defaults: units: metric
+     * lang: en
      *
-     * @param city
-     * @param page
-     * @param size
-     * @return
-     */
-    @GetMapping("/forecast/{city}")
-    public ResponseEntity<Page<WeatherDataDTO>> getSortedWeather3Hr5dayForecastByCity(@PathVariable String city,
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "8") int size) {
-
-        Page<WeatherDataDTO> weatherDataDTOs = weatherService.getSortedWeather3Hr5dayForecastByCity(city, page, size);
-
-        return ResponseEntity.ok(weatherDataDTOs);
-    }
-
-    /**
-     * GET method for getting weather forecast DTOs by city, unit of
-     * measurement, and language in json. Refer to `constants/` folder for
-     * details regarding unit of measurement and language. Except for city, all
-     * paramaters are optional.
-     *
-     * @param city
+     * @param lat
+     * @param lon
      * @param units
      * @param lang
-     * @param page
-     * @param size
-     * @return
+     * @return weather data, time of day and forecasts data to "index.html"
      */
-    @GetMapping("/forecast")
-    public ResponseEntity<Page<WeatherDataDTO>> getSortedWeather3Hr5dayForecastByCity(@PathVariable(required = false) String city,
+    @GetMapping
+    public ModelAndView getListWeatherForecastByCoordinates(@RequestParam double lat, @RequestParam double lon,
             @RequestParam(required = false, defaultValue = "metric") String units,
-            @RequestParam(required = false, defaultValue = "en") String lang,
-            @RequestParam(required = false, defaultValue = "0") int page,
-            @RequestParam(required = false, defaultValue = "8") int size) {
+            @RequestParam(required = false, defaultValue = "en") String lang) {
 
-        if (city == null || city.trim().isEmpty()) {
-            handleEmptyCity();
-        }
+        logger.info("Fetching weather data and preparing view model for coordinates: lat={}, lon={}", lat, lon);
+        List<WeatherDataDTO> weatherDataDTOs = weatherService.getListWeatherForecastByCoordinates(lat, lon, units, lang);
 
-        Page<WeatherDataDTO> weatherDataDTOs = weatherService.getSortedWeather3Hr5dayForecastByCity(city, page, size);
-
-        return ResponseEntity.ok(weatherDataDTOs);
+        return generateModelAndView(weatherDataDTOs);
     }
 
     /**
-     * GET method when passing an empty city argument.
+     * Helper method to generate model and view data fetch from the service
+     * layer.
      *
-     * @return
+     * @param weatherDataDTOs
+     * @return ModelAndView data
      */
-    @GetMapping({"/forecast", "/forecast/", "/"})
-    public ResponseEntity<ErrorResponse> handleEmptyCity() {
-        throw new CityNotFoundException("City must be provided");
-    }
+    private ModelAndView generateModelAndView(List<WeatherDataDTO> weatherDataDTOs) {
+        WeatherDataDTO currentWeatherDTO = weatherDataDTOs.get(0);
+        String timeOfDay = currentWeatherDTO.getFormattedDateTime().contains("am") ? "day" : "night";
+        List< WeatherDataDTO> weatherForecastDTO = weatherDataDTOs.subList(1, weatherDataDTOs.size());
 
-    // @Deprecated
-    // @GetMapping("/forecast/{city}")
-    // public ResponseEntity<List<WeatherDataDTO>> getWeather3HourForecastByCity(@RequestParam String city) {
-    //     List<WeatherDataDTO> weatherDataDTOs = weatherService.getListWeather3Hr5dayForecastByCity(city);
-    //     return ResponseEntity.ok(weatherDataDTOs);
-    // }
-    // @Deprecated
-    // @GetMapping("/forecast")
-    // public ResponseEntity<List<WeatherDataDTO>> getWeather3HourForecastByCity(@RequestParam String city,
-    //         @RequestParam(required = false, defaultValue = "metric") String units,
-    //         @RequestParam(required = false, defaultValue = "en") String lang) {
-    //     List<WeatherDataDTO> weatherDataDTOs = new ArrayList<>();
-    //     return ResponseEntity.ok(weatherDataDTOs);
-    // }
-    /**
-     *
-     * @param weatherTime
-     * @return String time of day
-     *
-     * helper method to determine the time of day for frontend background
-     */
-    private String getTimeOfDay(String weatherTime) {
-        return weatherTime.contains("am") ? "day" : "night";
+        logger.debug("Current weather: {}, Time of day: {}, Forecast count: {}",
+                currentWeatherDTO.toString(), timeOfDay, weatherForecastDTO.size());
+
+        ModelAndView modelAndView = new ModelAndView("index-test"); // Remove "-test" after testing
+        modelAndView.addObject("currentWeather", currentWeatherDTO);
+        modelAndView.addObject("timeOfDay", timeOfDay);
+        modelAndView.addObject("weatherForecast", weatherForecastDTO);
+
+        return modelAndView;
     }
 }

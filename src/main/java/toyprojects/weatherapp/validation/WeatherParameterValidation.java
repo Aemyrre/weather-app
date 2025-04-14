@@ -2,6 +2,8 @@ package toyprojects.weatherapp.validation;
 
 import java.util.Arrays;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
 
 import toyprojects.weatherapp.constants.ValidLanguage;
@@ -11,18 +13,21 @@ import toyprojects.weatherapp.exception.CityNotFoundException;
 @Component
 public class WeatherParameterValidation {
 
+    private static final Logger logger = LoggerFactory.getLogger(WeatherParameterValidation.class);
+
     public WeatherParameterValidation() {
     }
 
     public void validateCity(String city) {
-        System.out.println("ValidateCity was called");
+        logger.info("Validating instance variable: city={}", city);
         if (city == null || city.trim().isEmpty() || city.isBlank()) {
+            logger.warn("City not found. Invalid city: {}", city);
             throw new CityNotFoundException();
         }
     }
 
     public String validateUnitOfMeasurement(String units) {
-        System.out.println("validateUnitOfMeasurement was called");
+        logger.info("Validating instance variable: unit of measurement={}", units);
         if (units == null || units.trim().isEmpty() || units.isBlank()) {
             units = "me";
         }
@@ -35,7 +40,7 @@ public class WeatherParameterValidation {
     }
 
     public String validateLanguage(String lang) {
-        System.out.println("validateLanguage was called");
+        logger.info("Validating instance variable: language={}", lang);
         if (lang == null || lang.trim().isEmpty() || lang.isBlank()) {
             lang = "en";
         }
@@ -48,9 +53,10 @@ public class WeatherParameterValidation {
     }
 
     public void validateCoordinates(double lat, double lon) {
-        System.out.println("validateCoordinates was called");
+        logger.info("Validating instance variable: cooredinates: lat={}, lon={}", lat, lon);
         if (lat < -90 || lat > 90
                 || lon < -180 || lon > 180) {
+            logger.warn("City not found. Invalid coordinates: lat={}, lon={}", lat, lon);
             throw new CityNotFoundException();
         }
     }

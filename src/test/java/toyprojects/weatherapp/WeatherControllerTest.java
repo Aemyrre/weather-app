@@ -1,21 +1,27 @@
 package toyprojects.weatherapp;
 
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.junit.jupiter.api.Assertions.assertTrue;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
-import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.jsonPath;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.model;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.status;
+import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.view;
+import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.jayway.jsonpath.DocumentContext;
-import com.jayway.jsonpath.JsonPath;
 
+import toyprojects.weatherapp.controller.WeatherController;
 import toyprojects.weatherapp.entity.WeatherDataDTO;
 import toyprojects.weatherapp.service.WeatherService;
 
@@ -31,6 +37,8 @@ public class WeatherControllerTest {
 
     private final ObjectMapper objectMapper = new ObjectMapper();
 
+    private static final Logger logger = LoggerFactory.getLogger(WeatherController.class);
+
     @Test
     void contextLoads() {
         assertNotNull(weatherService);
@@ -38,284 +46,380 @@ public class WeatherControllerTest {
         assertNotNull(objectMapper);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void getWeatherByCity() throws Exception {
         String city = "Manila";
         String country = "PH";
+        String url = String.format("/weather/search?city=%s", city);
 
-        MvcResult result = mockMvc.perform(get("/weather/" + city))
+        MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
+                .andExpect(view().name("index-test"))
+                .andExpect(model().attributeExists("currentWeather"))
+                .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
-        String responseBody = result.getResponse().getContentAsString();
-        System.out.println("Response Body: " + responseBody);
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
 
-        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
+        Object currentWeather = modelAndView.getModel().get("currentWeather");
+        Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
-        assertEquals(city, weather.getCityName());
-        assertEquals(country, weather.getCountry());
-        assertNotNull(weather.getWeatherId());
-        assertNotNull(weather.getWeatherDescription());
-        assertNotNull(weather.getWeatherIcon());
-        assertNotNull(weather.getTemperature());
-        assertNotNull(weather.getTempFeelsLike());
-        assertNotNull(weather.getMinTemp());
-        assertNotNull(weather.getMaxTemp());
-        assertNotNull(weather.getHumidity());
-        assertNotNull(weather.getWindSpeed());
+        assertNotNull(currentWeather);
+        assertNotNull(timeOfDay);
+        assertNotNull(weatherForecast);
+
+        logger.debug("Current Weather: {}", currentWeather);
+        logger.debug("Time of Day: {}", timeOfDay);
+        logger.debug("Weather Forecast: {}", weatherForecast);
+
+        assertEquals(city, ((WeatherDataDTO) currentWeather).getCityName());
+        assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 
+    @SuppressWarnings("unchecked")
+    @Test
+    void getWeatherByCoordinates() throws Exception {
+        double lat = 14.537752;
+        double lon = 121.001381;
+        String country = "PH";
+        String url = String.format("/weather?lat=%s&lon=%s", lat, lon);
+
+        MvcResult result = mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index-test"))
+                .andExpect(model().attributeExists("currentWeather"))
+                .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("weatherForecast"))
+                .andReturn();
+
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
+
+        Object currentWeather = modelAndView.getModel().get("currentWeather");
+        Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object weatherForecast = modelAndView.getModel().get("weatherForecast");
+
+        assertNotNull(currentWeather);
+        assertNotNull(timeOfDay);
+        assertNotNull(weatherForecast);
+
+        logger.debug("Current Weather: {}", currentWeather);
+        logger.debug("Time of Day: {}", timeOfDay);
+        logger.debug("Weather Forecast: {}", weatherForecast);
+
+        logger.debug("Fetched city: {}", ((WeatherDataDTO) currentWeather).getCityName());
+        assertNotNull(((WeatherDataDTO) currentWeather).getCityName());
+        assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
+    }
+
+    @SuppressWarnings("unchecked")
     @Test
     void getWeatherByCity_differentSpelling() throws Exception {
         String city = "mAniLa";
         String country = "PH";
+        String url = String.format("/weather/search?city=%s", city);
 
-        MvcResult result = mockMvc.perform(get("/weather/" + city))
+        MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
+                .andExpect(view().name("index-test"))
+                .andExpect(model().attributeExists("currentWeather"))
+                .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
-        String responseBody = result.getResponse().getContentAsString();
-        System.out.println("Response Body: " + responseBody);
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
 
-        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
+        Object currentWeather = modelAndView.getModel().get("currentWeather");
+        Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
-        assertEquals(city.toLowerCase(), weather.getCityName().toLowerCase());
-        assertEquals(country, weather.getCountry());
+        assertNotNull(currentWeather);
+        assertNotNull(timeOfDay);
+        assertNotNull(weatherForecast);
+
+        assertEquals(city.toLowerCase(), ((WeatherDataDTO) currentWeather).getCityName().toLowerCase());
+        assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 
+    @SuppressWarnings("unchecked")
     @Test
     void getWeatherByCity_NonCapitalCity() throws Exception {
         String city = "north York";
         String country = "CA";
+        String url = String.format("/weather/search?city=%s", city);
 
-        MvcResult result = mockMvc.perform(get("/weather/" + city))
+        MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
+                .andExpect(view().name("index-test"))
+                .andExpect(model().attributeExists("currentWeather"))
+                .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
-        String responseBody = result.getResponse().getContentAsString();
-        System.out.println("Response Body: " + responseBody);
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
 
-        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
+        Object currentWeather = modelAndView.getModel().get("currentWeather");
+        Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
-        assertEquals(city.toLowerCase(), weather.getCityName().toLowerCase());
-        assertEquals(country, weather.getCountry());
+        assertNotNull(currentWeather);
+        assertNotNull(timeOfDay);
+        assertNotNull(weatherForecast);
+
+        assertEquals(city.toLowerCase(), ((WeatherDataDTO) currentWeather).getCityName().toLowerCase());
+        assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 
     @Test
     void getWeatherByCity_usingInvalidCity() throws Exception {
         String city = "invalidCity";
-        String error = "City not found";
+        String error = "Oops! Something went wrong!";
         String message = "City not found";
 
-        MvcResult result = mockMvc.perform(get("/weather/" + city))
+        String url = String.format("/weather/search?city=%s", city);
+
+        MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value(error))
-                .andExpect(jsonPath("$.message").value(message))
+                .andExpect(view().name("error"))
+                .andExpect(model().attributeExists("errorTitle"))
+                .andExpect(model().attributeExists("errorMessage"))
                 .andReturn();
 
-        System.out.println("Error Result: " + result.getResponse().getContentAsString());
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
+
+        Object errorObject = modelAndView.getModel().get("errorTitle");
+        Object messagObject = modelAndView.getModel().get("errorMessage");
+
+        assertEquals(error, errorObject);
+        assertEquals(message, messagObject);
+    }
+
+    @Test
+    void getWeatherByCoordinates_usingInvalidCoordinates() throws Exception {
+        double lat = -91;
+        double lon = 121.001381;
+        String error = "Oops! Something went wrong!";
+        String message = "City not found";
+
+        String url = String.format("/weather?lat=%s&lon=%s", lat, lon);
+
+        MvcResult result = mockMvc.perform(get(url))
+                .andExpect(status().isNotFound())
+                .andExpect(view().name("error"))
+                .andExpect(model().attributeExists("errorTitle"))
+                .andExpect(model().attributeExists("errorMessage"))
+                .andReturn();
+
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
+
+        Object errorObject = modelAndView.getModel().get("errorTitle");
+        Object messagObject = modelAndView.getModel().get("errorMessage");
+
+        assertEquals(error, errorObject);
+        assertEquals(message, messagObject);
     }
 
     @Test
     void getWeatherByCity_usingInvalidCity_nullInput() throws Exception {
         String city = null;
-        String error = "City not found";
+        String error = "Oops! Something went wrong!";
         String message = "City not found";
 
-        MvcResult result = mockMvc.perform(get("/weather/" + city))
+        String url = String.format("/weather/search?city=%s", city);
+
+        MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value(error))
-                .andExpect(jsonPath("$.message").value(message))
+                .andExpect(view().name("error"))
+                .andExpect(model().attributeExists("errorTitle"))
+                .andExpect(model().attributeExists("errorMessage"))
                 .andReturn();
 
-        System.out.println("Error Result: " + result.getResponse().getContentAsString());
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
+
+        Object errorObject = modelAndView.getModel().get("errorTitle");
+        Object messagObject = modelAndView.getModel().get("errorMessage");
+
+        assertEquals(error, errorObject);
+        assertEquals(message, messagObject);
     }
 
     @Test
     void getWeatherByCity_usingInvalidCity_emptyInput_test1() throws Exception {
-        String error = "City not found";
-        String message = "City must be provided";
+        String error = "Oops! Something went wrong!";
+        String message = "City not found";
 
-        MvcResult result = mockMvc.perform(get("/weather/"))
+        String url = String.format("/weather/search?city=");
+
+        MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value(error))
-                .andExpect(jsonPath("$.message").value(message))
+                .andExpect(view().name("error"))
+                .andExpect(model().attributeExists("errorTitle"))
+                .andExpect(model().attributeExists("errorMessage"))
                 .andReturn();
 
-        System.out.println("Error Result: " + result.getResponse().getContentAsString());
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
+
+        Object errorObject = modelAndView.getModel().get("errorTitle");
+        Object messagObject = modelAndView.getModel().get("errorMessage");
+
+        assertEquals(error, errorObject);
+        assertEquals(message, messagObject);
     }
 
     @Test
     void getWeatherByCity_usingInvalidCity_emptyInput_test2() throws Exception {
-        String error = "City not found";
-        String message = "City must be provided";
+        String error = "Invalid Input";
+        String message = "Required request parameter 'city' for method parameter type String is not present";
 
-        MvcResult result = mockMvc.perform(get("/weather"))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("$.error").value(error))
-                .andExpect(jsonPath("$.message").value(message))
+        String url = String.format("/weather/search");
+
+        MvcResult result = mockMvc.perform(get(url))
+                .andExpect(status().isBadRequest())
+                .andExpect(view().name("error"))
+                .andExpect(model().attributeExists("errorTitle"))
+                .andExpect(model().attributeExists("errorMessage"))
                 .andReturn();
 
-        System.out.println("Error Result: " + result.getResponse().getContentAsString());
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
+
+        Object errorObject = modelAndView.getModel().get("errorTitle");
+        Object messagObject = modelAndView.getModel().get("errorMessage");
+
+        assertEquals(error, errorObject);
+        assertEquals(message, messagObject);
     }
 
+    @Test
+    void getWeatherByCoordinates_usingInvalidCoordinates_emptyInput() throws Exception {
+        String error = "Unexpected Error";
+        String url = String.format("/weather?lat=&lon=");
+
+        MvcResult result = mockMvc.perform(get(url))
+                .andExpect(status().isInternalServerError())
+                .andExpect(view().name("error"))
+                .andExpect(model().attributeExists("errorTitle"))
+                .andExpect(model().attributeExists("errorMessage"))
+                .andReturn();
+
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
+
+        Object errorObject = modelAndView.getModel().get("errorTitle");
+        Object messagObject = modelAndView.getModel().get("errorMessage");
+
+        assertEquals(error, errorObject);
+        assertNotNull(messagObject);
+    }
+
+    @Test
+    void getWeatherByCoordinates_usingInvalidCoordinates_emptyInpu_part2() throws Exception {
+        String error = "Invalid Input";
+        String message = "Required request parameter 'lat' for method parameter type double is not present";
+        String url = String.format("/weather");
+
+        MvcResult result = mockMvc.perform(get(url))
+                .andExpect(status().isBadRequest())
+                .andExpect(view().name("error"))
+                .andExpect(model().attributeExists("errorTitle"))
+                .andExpect(model().attributeExists("errorMessage"))
+                .andReturn();
+
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
+
+        Object errorObject = modelAndView.getModel().get("errorTitle");
+        Object messagObject = modelAndView.getModel().get("errorMessage");
+
+        assertEquals(error, errorObject);
+        assertEquals(message, messagObject);
+    }
+
+    @SuppressWarnings("unchecked")
     @Test
     void getWeatherByCity_withAdditionalParameters() throws Exception {
         String city = "Manila";
+        String country = "PH";
         String unitOfMeasurement = "imperial";
-        String language = "en";
-        String url = String.format("city=%s&units=%s&lang=%s", city, unitOfMeasurement, language);
+        String url = String.format("/weather/search?city=%s&units=%s", city, unitOfMeasurement);
+
+        MvcResult result = mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index-test"))
+                .andExpect(model().attributeExists("currentWeather"))
+                .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("weatherForecast"))
+                .andReturn();
+
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
+
+        Object currentWeather = modelAndView.getModel().get("currentWeather");
+        Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object weatherForecast = modelAndView.getModel().get("weatherForecast");
+
+        assertNotNull(currentWeather);
+        assertNotNull(timeOfDay);
+        assertNotNull(weatherForecast);
+
+        logger.debug("Current Weather: {}", currentWeather);
+        logger.debug("Time of Day: {}", timeOfDay);
+        logger.debug("Weather Forecast: {}", weatherForecast);
+
+        assertEquals(city, ((WeatherDataDTO) currentWeather).getCityName());
+        assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
+    }
+
+    @SuppressWarnings("unchecked")
+    @Test
+    void getWeatherByCoordinates_withAdditionalParameters() throws Exception {
+        double lat = 14.537752;
+        double lon = 121.001381;
         String country = "PH";
+        String unitOfMeasurement = "imperial";
+        String url = String.format("/weather?lat=%s&lon=%s&units=%s", lat, lon, unitOfMeasurement);
 
-        MvcResult result = mockMvc.perform(get("/weather?" + url))
+        MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
+                .andExpect(view().name("index-test"))
+                .andExpect(model().attributeExists("currentWeather"))
+                .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
-        String responseBody = result.getResponse().getContentAsString();
-        System.out.println("Response Body: " + responseBody);
+        ModelAndView modelAndView = result.getModelAndView();
+        assertNotNull(modelAndView);
 
-        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
+        Object currentWeather = modelAndView.getModel().get("currentWeather");
+        Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
-        assertEquals(city, weather.getCityName());
-        assertEquals(country, weather.getCountry());
-        assertNotNull(weather.getWeatherId());
-        assertNotNull(weather.getWeatherDescription());
-        assertNotNull(weather.getWeatherIcon());
-        assertNotNull(weather.getTemperature());
-        assertNotNull(weather.getTempFeelsLike());
-        assertNotNull(weather.getMinTemp());
-        assertNotNull(weather.getMaxTemp());
-        assertNotNull(weather.getHumidity());
-        assertNotNull(weather.getWindSpeed());
-    }
+        assertNotNull(currentWeather);
+        assertNotNull(timeOfDay);
+        assertNotNull(weatherForecast);
 
-    @Test
-    void getWeatherByCity_invalidUnit_shouldReturnMetricUnits() throws Exception {
-        String city = "Manila";
-        String unitOfMeasurement = null;
-        String url = String.format("city=%s&units=%s", city, unitOfMeasurement);
-        String country = "PH";
+        logger.debug("Current Weather: {}", currentWeather);
+        logger.debug("Time of Day: {}", timeOfDay);
+        logger.debug("Weather Forecast: {}", weatherForecast);
 
-        MvcResult result = mockMvc.perform(get("/weather?" + url))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String responseBody = result.getResponse().getContentAsString();
-        System.out.println("Response Body: " + responseBody);
-
-        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
-
-        assertEquals(city, weather.getCityName());
-        assertEquals(country, weather.getCountry());
-        assertNotNull(weather.getWeatherId());
-    }
-
-    @Test
-    void getWeatherByCity_shouldReturnSpanishLangauge() throws Exception {
-        String city = "Manila";
-        String lang = "es";
-        String url = String.format("city=%s&lang=%s", city, lang);
-        String country = "PH";
-
-        MvcResult result = mockMvc.perform(get("/weather?" + url))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String responseBody = result.getResponse().getContentAsString();
-        System.out.println("Response Body: " + responseBody);
-
-        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
-
-        assertEquals(city, weather.getCityName());
-        assertEquals(country, weather.getCountry());
-        assertNotNull(weather.getWeatherId());
-    }
-
-    @Test
-    void getWeatherByCity_usingNonAvailableLanguage_shouldReturnEnglish() throws Exception {
-        String city = "Manila";
-        String lang = null;
-        String url = String.format("city=%s&lang=%s", city, lang);
-        String country = "PH";
-
-        MvcResult result = mockMvc.perform(get("/weather?" + url))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String responseBody = result.getResponse().getContentAsString();
-        System.out.println("Response Body: " + responseBody);
-
-        WeatherDataDTO weather = objectMapper.readValue(responseBody, WeatherDataDTO.class);
-
-        assertEquals(city, weather.getCityName());
-        assertEquals(country, weather.getCountry());
-        assertNotNull(weather.getWeatherId());
-    }
-
-    @Test
-    void getSortedWeather3Hr5dayForecastByCity() throws Exception {
-        String city = "toronto";
-        String country = "CA";
-        String uri = String.format("/weather/forecast/%s", city);
-
-        MvcResult result = mockMvc.perform(get(uri))
-                .andExpect(status().isOk())
-                .andReturn();
-
-        String responseBody = result.getResponse().getContentAsString();
-        System.out.println("Response Body: " + responseBody);
-
-        DocumentContext documentContext = JsonPath.parse(responseBody);
-        int pageNumber = documentContext.read("$.pageable.pageNumber");
-        int pageSize = documentContext.read("$.pageable.pageSize");
-        int totalPages = documentContext.read("$.totalPages");
-        int totalElements = documentContext.read("$.totalElements");
-        String countryName = documentContext.read("$.content[0].country");
-
-        assertEquals(0, pageNumber);
-        assertEquals(8, pageSize);
-        assertEquals(5, totalPages);
-        assertEquals(40, totalElements);
-        assertEquals(country, countryName);
-    }
-
-    @Test
-    void getSortedWeather3Hr5dayForecastByCity_usingInvalidCity() throws Exception {
-        String city = "InvalidCity";
-        String uri = String.format("/weather/forecast/%s", city);
-        String error = "City not found";
-        String message = "City not found";
-
-        mockMvc.perform(get(uri))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("error").value(error))
-                .andExpect(jsonPath("message").value(message));
-    }
-
-    @Test
-    void getSortedWeather3Hr5dayForecastByCity_usingEmptyCityField() throws Exception {
-        String city = "";
-        String uri = String.format("/weather/forecast/%s", city);
-        String error = "City not found";
-        String message = "City must be provided";
-
-        mockMvc.perform(get(uri))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("error").value(error))
-                .andExpect(jsonPath("message").value(message));
-    }
-
-    @Test
-    void getSortedWeather3Hr5dayForecastByCity_usingNullCityField() throws Exception {
-        String city = null;
-        String uri = String.format("/weather/forecast/%s", city);
-        String error = "City not found";
-        String message = "City not found";
-
-        System.out.println("URI: " + uri);
-        mockMvc.perform(get(uri))
-                .andExpect(status().isNotFound())
-                .andExpect(jsonPath("error").value(error))
-                .andExpect(jsonPath("message").value(message));
+        logger.debug("Fetched city: {}", ((WeatherDataDTO) currentWeather).getCityName());
+        assertNotNull(((WeatherDataDTO) currentWeather).getCityName());
+        assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 }
