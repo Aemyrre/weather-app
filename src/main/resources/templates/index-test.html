@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+  <head>
+    <title>Weather App</title>
+  </head>
+  <body>
+    <h1>Weather App</h1>
+    <!-- Add placeholders for Thymeleaf model attributes -->
+    <div th:text="${currentWeather}">Current weather will appear here</div>
+    <div th:text="${timeOfDay}">Time of day will appear here</div>
+    <div th:text="${weatherForecast}">Weather forecast will appear here</div>
+  </body>
+</html>
