@@ -87,7 +87,7 @@ public class WeatherController {
         logger.debug("Current weather: {}, Time of day: {}, Forecast count: {}",
                 currentWeatherDTO.toString(), timeOfDay, weatherForecastDTO.size());
 
-        ModelAndView modelAndView = new ModelAndView("index-test"); // Remove "-test" after testing
+        ModelAndView modelAndView = new ModelAndView("index"); // Remove/add "-test" after/during testing
         modelAndView.addObject("currentWeather", currentWeatherDTO);
         modelAndView.addObject("timeOfDay", timeOfDay);
         modelAndView.addObject("weatherForecast", weatherForecastDTO);
