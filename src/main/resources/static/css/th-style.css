@@ -2,6 +2,58 @@
 /* HTML WEATHER APP BACKGROUND */
 /***********************/
 
-.main-weather-background {
-  background: url();
+.weather-clear-day {
+  background: linear-gradient(to bottom, #87ceeb, #f0e68c) !important;
+}
+
+.weather-clear-night {
+  background: linear-gradient(to bottom, #191970, #000000) !important;
+}
+
+.weather-clouds-day {
+  background: linear-gradient(to bottom, #c9d6df, #f0f0f0) !important;
+}
+
+.weather-clouds-night {
+  background: linear-gradient(to bottom, #6c757d, #1a1a1a) !important;
+}
+
+.weather-drizzle-day {
+  background: linear-gradient(to bottom, #aecbf2, #dee2e6) !important;
+}
+
+.weather-drizzle-night {
+  background: linear-gradient(to bottom, #5c677d, #222a35) !important;
+}
+
+.weather-fog-day {
+  background: linear-gradient(to bottom, #d3d3d3, #f5f5dc) !important;
+}
+
+.weather-fog-night {
+  background: linear-gradient(to bottom, #656565, #1a1a1a) !important;
+}
+
+.weather-rain-day {
+  background: linear-gradient(to bottom, #005aa7, #00baff) !important;
+}
+
+.weather-rain-night {
+  background: linear-gradient(to bottom, #0f4c75, #101820) !important;
+}
+
+.weather-snow-day {
+  background: linear-gradient(to bottom, #ffffff, #9ccce7) !important;
+}
+
+.weather-snow-night {
+  background: linear-gradient(to bottom, #ccd6df, #243b55) !important;
+}
+
+.weather-thunderstorm-day {
+  background: linear-gradient(to bottom, #4b4e6d, #ffcc00) !important;
+}
+
+.weather-thunderstorm-night {
+  background: linear-gradient(to bottom, #1b003d, #0d0d0d) !important;
 }

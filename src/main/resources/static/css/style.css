@@ -1,8 +1,369 @@
 /***********************/
-/* HTML WEATHER APP BACKGROUND */
+/* WEATHER APP MAIN SECTION */
 /***********************/
 
 .main-background {
+  height: 100vh;
+  width: 100vw;
+  background-size: cover;
+  background-position: center;
+
+  display: grid;
+  place-items: center;
+}
+
+/* Temporary */
+.weather-clear-day-static {
+  background: linear-gradient(to bottom, #87ceeb, #f0e68c);
+}
+
+.weather-app-grid {
+  width: 100%;
+
+  /* display: grid;
+  align-items: center;
+  justify-content: center;
+
+  grid-template-columns: 1fr;
+  grid-template-rows: 0.2fr 0.4fr 0.4fr;
+  row-gap: 4.8rem;
+  column-gap: 6.4rem; */
+
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 4.8rem;
+}
+
+.blur-background {
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  border-radius: 11px;
+  padding: 3rem;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+/***********************/
+/* WEATHER APP HEADER */
+/***********************/
+
+.weather-app-header {
+  grid-row: 1/2;
+
+  display: grid;
+  grid-template-columns: 230px 1fr 135px;
+  column-gap: 3.2rem;
+  width: 100%;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.weather-app-introduction {
+  justify-self: center;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1.2rem;
+}
+
+.nav-link-img {
+  height: 3.5rem;
+  width: 3.5rem;
+}
+
+/* WEATHER SEARCH CONTAINER */
+
+.weather-search-container {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 2.4rem;
+}
+
+.search-box-container {
+  position: relative;
+  width: 100%;
+}
+
+.search-box {
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-size: 2rem;
+  height: 4.4rem;
+  width: 100%;
+  padding: 1.6rem;
+  border: none;
+  border-radius: 100px;
+}
+
+.search-box:focus,
+.search-symbol img:focus,
+#language-selection:focus {
+  outline: none;
+  box-shadow: 0 0 5px 2px rgba(0, 0, 0, 0.1);
+  border-color: #007bff;
+  transition: box-shadow 0.3s ease, border 0.3s ease;
+}
+
+.search-symbol {
+  height: 24px;
+  width: 24px;
+
+  position: absolute;
+  bottom: 50%;
+  right: 1rem;
+
+  transform: translateY(50%);
+
+  border: none;
+  background-color: transparent;
+  border-radius: 100px;
+
+  cursor: pointer;
+  padding: 0;
+}
+
+.search-symbol img {
+  height: 100%;
+  width: 100%;
+}
+
+/* WEATHER UNIT OF MEASUREMENT */
+
+.slider-container {
+  position: relative;
+  flex-shrink: 0;
+  width: 8.8rem;
+  height: 4.4rem;
+  background: #fff;
+  border-radius: 100px;
+  display: flex;
+  align-items: center;
+  justify-content: space-around;
+  cursor: pointer;
+}
+
+.slider-container input {
+  display: none;
+}
+
+.slider-container label {
+  z-index: 3;
+  position: relative;
+  font-size: 2rem;
+  color: #fff;
+  cursor: pointer;
+  transition: color 0.3s;
+}
+
+.slider-container .slider {
+  z-index: 1;
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 50%;
+  height: 100%;
+  background: #a5a58d;
+  border-radius: 100px;
+  transition: transform 0.3s;
+}
+
+.slider-container input#imperial:checked ~ .slider {
+  transform: translateX(100%);
+}
+
+.slider-container input#metric:checked + label {
+  color: #555;
+}
+.slider-container input#imperial:checked + label {
+  color: #555;
+}
+
+/* NAV LINKS */
+.weather-nav {
+  justify-self: center;
+
+  display: flex;
+  place-items: center;
+  gap: 1rem;
+}
+.weather-nav p {
+  font-family: "Roboto", Arial, Helvetica, sans-serif;
+  font-size: 2.4rem;
+  font-weight: 600;
+}
+
+.weather-nav ul {
+  list-style: none;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  gap: 1rem;
+}
+
+/***********************/
+/* SECTION WEATHER */
+/***********************/
+
+.section-weather {
+  padding: 4.8rem;
+  grid-row: 2/3;
+
+  margin: 0 auto;
+  padding: 0 3.2rem;
+  width: 100%;
+  height: 100%;
+}
+
+.weather-data {
+  background-color: #faf9f6;
+  border-radius: 11px;
+  padding: 1.6rem 4.8rem;
+
+  display: grid;
+  align-items: center;
+  row-gap: 1.6rem;
+
+  column-gap: 6.4rem;
+
+  grid-template-columns: 0.6fr 0.4fr;
+  grid-template-rows: 0.75fr 0.25fr;
+}
+
+.weather-temp-container {
+  justify-self: end;
+
+  display: flex;
+  align-items: end;
+  justify-items: center;
+
+  gap: 3.2rem;
+}
+
+.weather-temp {
+  align-self: start;
+  font-size: 8.6rem;
+}
+
+.weather-description-icon {
+  height: 15rem;
+  width: 15rem;
+}
+
+.weather-data-container {
+  display: flex;
+  flex-direction: column;
+
+  gap: 0.4rem;
+}
+
+.weather-data-style {
+  font-size: 1.8rem;
+  text-transform: capitalize;
+}
+
+.weather-data-align {
+  display: flex;
+  align-items: center;
+
+  gap: 1.2rem;
+}
+
+.weather-data-icon {
+  height: 2.4rem;
+  width: 2.4rem;
+}
+
+.weather-data p {
+  display: inline-block;
+}
+
+.misc-weather-data {
+  grid-column: 1/-1;
+  grid-row: 2/-1;
+
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+/***********************/
+/* SECTION FORECAST */
+/***********************/
+
+.section-forecast {
+  padding: 4.8rem;
+  grid-row: 3/-1;
+
+  margin: 0 auto;
+  padding: 0 3.2rem;
+  width: 100%;
+  height: 100%;
+}
+
+.forecast-carousel-container {
+  /* position: relative; */
+}
+
+.forecast-cards {
+  /* position: absolute; */
+  overflow-x: auto;
+  scroll-behavior: smooth;
+  scroll-snap-align: start;
+  scroll-snap-type: x mandatory;
+
+  margin: 0 auto;
+  padding: 5px 10px 20px;
+
+  display: flex;
+  gap: 5%;
+
+  min-width: 33.33%;
+}
+
+.forecast-card {
+  flex: 0 0 30%;
+
+  background-color: #faf9f6;
+  border-radius: 11px;
+  padding: 1.6rem;
+
+  transition: all 0.3s ease-in-out;
+}
+
+.forecast-card:hover {
+  transform: translateY(-5px);
+  box-shadow: 0 4px 8px 2px rgba(0, 0, 0, 0.07);
+}
+
+.forecast-date {
+  text-transform: none;
+  font-size: 1.6rem;
+}
+
+.forecast-display {
+  display: flex;
+  align-self: center;
+  justify-content: space-evenly;
+}
+
+.forecast-temp-img {
+  height: 2.4rem;
+  width: 2.4rem;
+}
+
+.forecast-data-style {
+  font-size: 2rem;
+}
+
+.forecast-img {
+  height: 9rem;
+  width: 9rem;
 }
 
 /* 
@@ -31,7 +392,9 @@
     --- 02 Colours
 
     - Primary: #a5a58d (Call-to-action BG and Button Colours)
-      #D5D3DF
+      #D5D3DF (Titan White)
+      #f1e7df (Dawn White)
+      #FAF9F6 (Off-White)
     - Secondary: #d1e0e5
     - Tints:
         #edede8
