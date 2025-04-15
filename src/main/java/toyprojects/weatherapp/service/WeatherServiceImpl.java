@@ -7,6 +7,7 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
 import org.springframework.web.client.RestClientException;
@@ -51,6 +52,7 @@ public class WeatherServiceImpl implements WeatherService {
      *
      */
     @Override
+    @Cacheable(value = "weatherData", key = "T(java.util.Objects).hash(#city, #units, #lang)", cacheManager = "cacheManager")
     public List<WeatherDataDTO> getListWeatherForecastByCity(String city, String units, String lang) {
         validator.validateCity(city);
         units = validator.validateUnitOfMeasurement(units);
@@ -74,6 +76,7 @@ public class WeatherServiceImpl implements WeatherService {
      *
      */
     @Override
+    @Cacheable(value = "weatherData", key = "T(java.util.Objects).hash(#lat, #lon, #units, #lang)", cacheManager = "cacheManager")
     public List<WeatherDataDTO> getListWeatherForecastByCoordinates(double lat, double lon, String units, String lang) {
         validator.validateCoordinates(lat, lon);
         units = validator.validateUnitOfMeasurement(units);
