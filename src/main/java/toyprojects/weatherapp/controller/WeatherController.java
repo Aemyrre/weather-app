@@ -47,7 +47,7 @@ public class WeatherController {
         logger.info("Fetching weather data and preparing view model for city: {}", city);
         List<WeatherDataDTO> weatherDataDTOs = weatherService.getListWeatherForecastByCity(city, units, lang);
 
-        return generateModelAndView(weatherDataDTOs);
+        return generateModelAndView(weatherDataDTOs, units, null, null);
     }
 
     /**
@@ -69,7 +69,7 @@ public class WeatherController {
         logger.info("Fetching weather data and preparing view model for coordinates: lat={}, lon={}", lat, lon);
         List<WeatherDataDTO> weatherDataDTOs = weatherService.getListWeatherForecastByCoordinates(lat, lon, units, lang);
 
-        return generateModelAndView(weatherDataDTOs);
+        return generateModelAndView(weatherDataDTOs, units, lat, lon);
     }
 
     /**
@@ -79,7 +79,7 @@ public class WeatherController {
      * @param weatherDataDTOs
      * @return ModelAndView data
      */
-    private ModelAndView generateModelAndView(List<WeatherDataDTO> weatherDataDTOs) {
+    private ModelAndView generateModelAndView(List<WeatherDataDTO> weatherDataDTOs, String units, Double lat, Double lon) {
         WeatherDataDTO currentWeatherDTO = weatherDataDTOs.get(0);
         String timeOfDay = currentWeatherDTO.getFormattedDateTime().contains("am") ? "day" : "night";
         List< WeatherDataDTO> weatherForecastDTO = weatherDataDTOs.subList(1, weatherDataDTOs.size());
@@ -89,8 +89,14 @@ public class WeatherController {
 
         ModelAndView modelAndView = new ModelAndView("index"); // Remove/add "-test" after/during testing
         modelAndView.addObject("currentWeather", currentWeatherDTO);
+        modelAndView.addObject("units", units);
         modelAndView.addObject("timeOfDay", timeOfDay);
         modelAndView.addObject("weatherForecast", weatherForecastDTO);
+        modelAndView.addObject("city", currentWeatherDTO.getCityName());
+        if (lat != null & lon != null) {
+            modelAndView.addObject("lat", lat);
+            modelAndView.addObject("lon", lon);
+        }
 
         return modelAndView;
     }

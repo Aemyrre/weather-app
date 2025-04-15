@@ -58,6 +58,7 @@ public class WeatherControllerTest {
                 .andExpect(view().name("index-test"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("units"))
                 .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
@@ -66,10 +67,12 @@ public class WeatherControllerTest {
 
         Object currentWeather = modelAndView.getModel().get("currentWeather");
         Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object units = modelAndView.getModel().get("units");
         Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
         assertNotNull(currentWeather);
         assertNotNull(timeOfDay);
+        assertNotNull(units);
         assertNotNull(weatherForecast);
 
         logger.debug("Current Weather: {}", currentWeather);
@@ -78,6 +81,7 @@ public class WeatherControllerTest {
 
         assertEquals(city, ((WeatherDataDTO) currentWeather).getCityName());
         assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(units.equals("metric"));
         assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 
@@ -94,6 +98,7 @@ public class WeatherControllerTest {
                 .andExpect(view().name("index-test"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("units"))
                 .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
@@ -102,19 +107,22 @@ public class WeatherControllerTest {
 
         Object currentWeather = modelAndView.getModel().get("currentWeather");
         Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object units = modelAndView.getModel().get("units");
         Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
         assertNotNull(currentWeather);
         assertNotNull(timeOfDay);
+        assertNotNull(units);
         assertNotNull(weatherForecast);
 
         logger.debug("Current Weather: {}", currentWeather);
         logger.debug("Time of Day: {}", timeOfDay);
         logger.debug("Weather Forecast: {}", weatherForecast);
 
-        logger.debug("Fetched city: {}", ((WeatherDataDTO) currentWeather).getCityName());
+        logger.debug("Fetch city from coordinates: {}", ((WeatherDataDTO) currentWeather).getCityName());
         assertNotNull(((WeatherDataDTO) currentWeather).getCityName());
         assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(units.equals("metric"));
         assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 
@@ -130,6 +138,7 @@ public class WeatherControllerTest {
                 .andExpect(view().name("index-test"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("units"))
                 .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
@@ -138,14 +147,21 @@ public class WeatherControllerTest {
 
         Object currentWeather = modelAndView.getModel().get("currentWeather");
         Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object units = modelAndView.getModel().get("units");
         Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
         assertNotNull(currentWeather);
         assertNotNull(timeOfDay);
+        assertNotNull(units);
         assertNotNull(weatherForecast);
 
-        assertEquals(city.toLowerCase(), ((WeatherDataDTO) currentWeather).getCityName().toLowerCase());
+        logger.debug("Current Weather: {}", currentWeather);
+        logger.debug("Time of Day: {}", timeOfDay);
+        logger.debug("Weather Forecast: {}", weatherForecast);
+
+        assertEquals(city, ((WeatherDataDTO) currentWeather).getCityName());
         assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(units.equals("metric"));
         assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 
@@ -161,6 +177,7 @@ public class WeatherControllerTest {
                 .andExpect(view().name("index-test"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("units"))
                 .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
@@ -169,14 +186,21 @@ public class WeatherControllerTest {
 
         Object currentWeather = modelAndView.getModel().get("currentWeather");
         Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object units = modelAndView.getModel().get("units");
         Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
         assertNotNull(currentWeather);
         assertNotNull(timeOfDay);
+        assertNotNull(units);
         assertNotNull(weatherForecast);
 
-        assertEquals(city.toLowerCase(), ((WeatherDataDTO) currentWeather).getCityName().toLowerCase());
+        logger.debug("Current Weather: {}", currentWeather);
+        logger.debug("Time of Day: {}", timeOfDay);
+        logger.debug("Weather Forecast: {}", weatherForecast);
+
+        assertEquals(city, ((WeatherDataDTO) currentWeather).getCityName());
         assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertTrue(units.equals("metric"));
         assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 
@@ -362,6 +386,7 @@ public class WeatherControllerTest {
                 .andExpect(view().name("index-test"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("units"))
                 .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
@@ -370,10 +395,12 @@ public class WeatherControllerTest {
 
         Object currentWeather = modelAndView.getModel().get("currentWeather");
         Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object units = modelAndView.getModel().get("units");
         Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
         assertNotNull(currentWeather);
         assertNotNull(timeOfDay);
+        assertNotNull(units);
         assertNotNull(weatherForecast);
 
         logger.debug("Current Weather: {}", currentWeather);
@@ -382,6 +409,7 @@ public class WeatherControllerTest {
 
         assertEquals(city, ((WeatherDataDTO) currentWeather).getCityName());
         assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertEquals(unitOfMeasurement, units);
         assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 
@@ -399,6 +427,7 @@ public class WeatherControllerTest {
                 .andExpect(view().name("index-test"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
+                .andExpect(model().attributeExists("units"))
                 .andExpect(model().attributeExists("weatherForecast"))
                 .andReturn();
 
@@ -407,10 +436,12 @@ public class WeatherControllerTest {
 
         Object currentWeather = modelAndView.getModel().get("currentWeather");
         Object timeOfDay = modelAndView.getModel().get("timeOfDay");
+        Object units = modelAndView.getModel().get("units");
         Object weatherForecast = modelAndView.getModel().get("weatherForecast");
 
         assertNotNull(currentWeather);
         assertNotNull(timeOfDay);
+        assertNotNull(units);
         assertNotNull(weatherForecast);
 
         logger.debug("Current Weather: {}", currentWeather);
@@ -420,6 +451,7 @@ public class WeatherControllerTest {
         logger.debug("Fetched city: {}", ((WeatherDataDTO) currentWeather).getCityName());
         assertNotNull(((WeatherDataDTO) currentWeather).getCityName());
         assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
+        assertEquals(unitOfMeasurement, units);
         assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
     }
 }
