@@ -18,6 +18,20 @@
       rel="stylesheet"
     />
 
+    <!-- ICON FOR BROWSER TAB -->
+    <!-- STATIC -->
+    <link rel="icon" href="../static/img/other/favicon.png" />
+    <link
+      rel="apple-touch-icon"
+      href="../static/img/other/apple-touch-icon.png"
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+
+    <!-- THYMELEAF -->
+    <link rel="icon" th:href="@{/img/other/favicon.png}" />
+    <link rel="apple-touch-icon" th:href="@{/img/other/apple-touch-icon.png}" />
+    <link rel="manifest" th:href="manifest.webmanifest" />
+
     <!-- CSS -->
     <!-- STATIC -->
     <link rel="stylesheet" href="../static/css/style.css" />
@@ -34,11 +48,17 @@
     <!-- THYMELEAF -->
     <script defer th:src="@{/js/location.js}"></script>
     <script defer th:src="@{/js/forecast-scrolling.js}"></script>
+
+    <!-- Smooth scrolling JS for safari -->
+    <script
+      defer
+      src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"
+    ></script>
   </head>
   <body>
     <main
       class="main-background weather-clear-day-static"
-      th:class="'weather-' + ${currentWeather.weatherMainDescription} + '-' + ${timeOfDay}"
+      th:class="'weather-' + ${currentWeather.weatherMainDescription} + '-' + ${timeOfDay} + ' main-background'"
       role="img"
       aria-label="Background image for the whole weather app"
     >
@@ -74,8 +94,7 @@
                 <input
                   class="search-box"
                   type="text"
-                  name="location"
-                  th:field="*{city}"
+                  name="city"
                   id="city"
                   placeholder="Entery City"
                   required
@@ -96,7 +115,7 @@
                     type="radio"
                     value="metric"
                     name="units"
-                    checked
+                    th:checked="${units == 'metric'}"
                   />
                   <label class="radio-label" for="metric">&deg;C</label>
                 </div>
@@ -107,6 +126,7 @@
                     type="radio"
                     value="imperial"
                     name="units"
+                    th:checked="${units == 'imperial'}"
                   />
                   <label class="radio-label" for="imperial">&deg;F</label>
 
@@ -176,7 +196,7 @@
                 <p class="weather-temp temp-font">
                   <span th:text="${currentWeather.temperature}">31</span
                   ><span>&deg;</span
-                  ><span th:if="${units == 'metric' ? 'C' : 'F'}">C</span>
+                  ><span th:text="${units == 'metric' ? 'C' : 'F'}">C</span>
                 </p>
 
                 <img
@@ -229,7 +249,7 @@
                     <span class="margin-right-text">Feels like:</span>
                     <span th:text="${currentWeather.tempFeelsLike}">36</span
                     ><span>&deg;</span
-                    ><span th:if="${units == 'metric' ? 'C' : 'F'}">C</span>
+                    ><span th:text="${units == 'metric' ? 'C' : 'F'}">C</span>
                   </p>
                 </div>
 
@@ -259,7 +279,7 @@
                     <span th:text="${currentWeather.windSpeed}">24</span>
                     <span
                       class="small-letter"
-                      th:if="${units == 'metric' ? 'm/s' : 'mph'}"
+                      th:text="${units == 'metric' ? 'm/s' : 'mph'}"
                       >m/s</span
                     >
                   </p>
@@ -310,7 +330,7 @@
                         <p class="forecast-data-style">
                           <span th:text="${forecast.temperature}">33</span
                           ><span>&deg;</span
-                          ><span th:if="${units == 'metric' ? 'C' : 'F'}"
+                          ><span th:text="${units == 'metric' ? 'C' : 'F'}"
                             >C</span
                           >
                         </p>
@@ -327,7 +347,7 @@
                         <p class="forecast-data-style">
                           <span th:text="${forecast.tempFeelsLike}">36</span
                           ><span>&deg;</span
-                          ><span th:if="${units == 'metric' ? 'C' : 'F'}"
+                          ><span th:text="${units == 'metric' ? 'C' : 'F'}"
                             >C</span
                           >
                         </p>
@@ -337,7 +357,7 @@
                 </div>
               </div>
               <!-- FORECAST CARD DUMMY -->
-              <div
+              <!-- <div
                 class="forecast-card weather-data-style weather-data-font-inter"
               >
                 <div class="forecast-weather">
@@ -380,9 +400,9 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- FORECAST CARD DUMMY -->
-              <div
+              <!-- <div
                 class="forecast-card weather-data-style weather-data-font-inter"
               >
                 <div class="forecast-weather">
@@ -425,9 +445,9 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
               <!-- FORECAST CARD DUMMY -->
-              <div
+              <!-- <div
                 class="forecast-card weather-data-style weather-data-font-inter"
               >
                 <div class="forecast-weather">
@@ -470,7 +490,7 @@
                     </div>
                   </div>
                 </div>
-              </div>
+              </div> -->
             </div>
           </section>
         </div>

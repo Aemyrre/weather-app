@@ -3,27 +3,33 @@
 
 document.addEventListener("DOMContentLoaded", () => {
   const searchInput = document.getElementById("city");
+  const searchForm = document.querySelector(".weather-search-container");
 
-  // Check local storage for geolocation processing flag
-  const geolocationProcessed = localStorage.getItem("geolocationProcessed");
+  searchForm.addEventListener("submit", (event) => {
+    // Prevent geolocation redirect if city input is used
+    if (searchInput.value) {
+      console.log("City input detected. Proceeding with form submission.");
+      return;
+    }
 
-  if (!geolocationProcessed && navigator.geolocation && !searchInput.value) {
-    navigator.geolocation.getCurrentPosition(
-      (position) => {
-        const lat = position.coords.latitude;
-        const lon = position.coords.longitude;
+    // Geolocation redirect logic
+    event.preventDefault();
+    if (
+      !localStorage.getItem("geolocationProcessed") &&
+      navigator.geolocation
+    ) {
+      navigator.geolocation.getCurrentPosition(
+        (position) => {
+          const lat = position.coords.latitude;
+          const lon = position.coords.longitude;
 
-        // Save flag to local storage to prevent infinite reloads
-        localStorage.setItem("geolocationProcessed", "true");
-
-        // Redirect with lat and lon
-        window.location.href = `/weather?lat=${lat}&lon=${lon}`;
-      },
-      (error) => {
-        console.error("Error fetching location:", error.message);
-      }
-    );
-  } else {
-    console.log("Geolocation already processed or city input detected.");
-  }
+          localStorage.setItem("geolocationProcessed", "true");
+          window.location.href = `/weather?lat=${lat}&lon=${lon}`;
+        },
+        (error) => {
+          console.error("Error fetching location:", error.message);
+        }
+      );
+    }
+  });
 });
