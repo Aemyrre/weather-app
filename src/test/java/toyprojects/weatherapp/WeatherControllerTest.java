@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.DirtiesContext;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.MvcResult;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
@@ -26,6 +27,7 @@ import toyprojects.weatherapp.entity.WeatherDataDTO;
 import toyprojects.weatherapp.service.WeatherService;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@DirtiesContext(classMode = DirtiesContext.ClassMode.BEFORE_EACH_TEST_METHOD)
 @AutoConfigureMockMvc
 public class WeatherControllerTest {
 
@@ -55,7 +57,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index-test"))
+                .andExpect(view().name("index"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -95,7 +97,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index-test"))
+                .andExpect(view().name("index"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -135,7 +137,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index-test"))
+                .andExpect(view().name("index"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -159,7 +161,7 @@ public class WeatherControllerTest {
         logger.debug("Time of Day: {}", timeOfDay);
         logger.debug("Weather Forecast: {}", weatherForecast);
 
-        assertEquals(city, ((WeatherDataDTO) currentWeather).getCityName());
+        assertEquals(city.toLowerCase(), ((WeatherDataDTO) currentWeather).getCityName().toLowerCase());
         assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
         assertTrue(units.equals("metric"));
         assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
@@ -174,7 +176,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index-test"))
+                .andExpect(view().name("index"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -198,7 +200,7 @@ public class WeatherControllerTest {
         logger.debug("Time of Day: {}", timeOfDay);
         logger.debug("Weather Forecast: {}", weatherForecast);
 
-        assertEquals(city, ((WeatherDataDTO) currentWeather).getCityName());
+        assertEquals(city.toLowerCase(), ((WeatherDataDTO) currentWeather).getCityName().toLowerCase());
         assertEquals(country, ((WeatherDataDTO) currentWeather).getCountry());
         assertTrue(units.equals("metric"));
         assertTrue(((List<WeatherDataDTO>) weatherForecast).size() == 10);
@@ -383,7 +385,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index-test"))
+                .andExpect(view().name("index"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -424,7 +426,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index-test"))
+                .andExpect(view().name("index"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))

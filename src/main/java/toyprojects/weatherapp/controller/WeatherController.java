@@ -45,9 +45,10 @@ public class WeatherController {
         }
 
         logger.info("Fetching weather data and preparing view model for city: {}", city);
-        List<WeatherDataDTO> weatherDataDTOs = weatherService.getListWeatherForecastByCity(city, units, lang);
+        WeatherDataDTO currentWeatherDataDTO = weatherService.getCurrentWeatherDataByCity(city, units, lang);
+        List<WeatherDataDTO> forecastWeatherDataDTO = weatherService.getListWeatherForecastByCity(city, units, lang);
 
-        return generateModelAndView(weatherDataDTOs, units, null, null);
+        return generateModelAndView(currentWeatherDataDTO, forecastWeatherDataDTO, units, null, null);
     }
 
     /**
@@ -67,9 +68,10 @@ public class WeatherController {
             @RequestParam(required = false, defaultValue = "en") String lang) {
 
         logger.info("Fetching weather data and preparing view model for coordinates: lat={}, lon={}", lat, lon);
-        List<WeatherDataDTO> weatherDataDTOs = weatherService.getListWeatherForecastByCoordinates(lat, lon, units, lang);
+        WeatherDataDTO currentWeatherDataDTO = weatherService.getCurrentWeatherDataByCoordinates(lat, lon, units, lang);
+        List<WeatherDataDTO> forecastWeatherDataDTO = weatherService.getListWeatherForecastByCoordinates(lat, lon, units, lang);
 
-        return generateModelAndView(weatherDataDTOs, units, lat, lon);
+        return generateModelAndView(currentWeatherDataDTO, forecastWeatherDataDTO, units, lat, lon);
     }
 
     /**
@@ -79,20 +81,18 @@ public class WeatherController {
      * @param weatherDataDTOs
      * @return ModelAndView data
      */
-    private ModelAndView generateModelAndView(List<WeatherDataDTO> weatherDataDTOs, String units, Double lat, Double lon) {
-        WeatherDataDTO currentWeatherDTO = weatherDataDTOs.get(0);
-        String timeOfDay = currentWeatherDTO.getFormattedDateTime().contains("am") ? "day" : "night";
-        List< WeatherDataDTO> weatherForecastDTO = weatherDataDTOs.subList(1, weatherDataDTOs.size());
+    private ModelAndView generateModelAndView(WeatherDataDTO currentWeatherDataDTO, List<WeatherDataDTO> forecastWeatherDataDTO, String units, Double lat, Double lon) {
+        String timeOfDay = currentWeatherDataDTO.getFormattedDateTime().contains("am") ? "day" : "night";
 
         logger.debug("Current weather: {}, Time of day: {}, Forecast count: {}",
-                currentWeatherDTO.toString(), timeOfDay, weatherForecastDTO.size());
+                currentWeatherDataDTO.toString(), timeOfDay, forecastWeatherDataDTO.size());
 
         ModelAndView modelAndView = new ModelAndView("index"); // Remove/add "-test" after/during testing
-        modelAndView.addObject("currentWeather", currentWeatherDTO);
+        modelAndView.addObject("currentWeather", currentWeatherDataDTO);
         modelAndView.addObject("units", units);
         modelAndView.addObject("timeOfDay", timeOfDay);
-        modelAndView.addObject("weatherForecast", weatherForecastDTO);
-        modelAndView.addObject("city", currentWeatherDTO.getCityName());
+        modelAndView.addObject("weatherForecast", forecastWeatherDataDTO);
+        modelAndView.addObject("city", currentWeatherDataDTO.getCityName());
         if (lat != null & lon != null) {
             modelAndView.addObject("lat", lat);
             modelAndView.addObject("lon", lon);

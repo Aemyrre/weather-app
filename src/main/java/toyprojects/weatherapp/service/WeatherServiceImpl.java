@@ -29,7 +29,10 @@ public class WeatherServiceImpl implements WeatherService {
     private String apiKey;
 
     @Value("${openweathermap.api.baseurl}")
-    private String baseURL;
+    private String weatherURL;
+
+    @Value("${openweathermap.api.forecast.baseurl}")
+    private String forecastURL;
 
     private final RestTemplate restTemplate;
     private final WeatherParameterValidation validator;
@@ -39,6 +42,42 @@ public class WeatherServiceImpl implements WeatherService {
     public WeatherServiceImpl(RestTemplate restTemplate, WeatherParameterValidation validator) {
         this.restTemplate = restTemplate;
         this.validator = validator;
+    }
+
+    /**
+     * Fetches current weather data using city name for the controller
+     *
+     * @param city
+     * @param units
+     * @param lang
+     *
+     * @return WeatherDataDTO
+     *
+     */
+    @Override
+    @Cacheable(value = "currentWeather", key = "T(java.util.Objects).hash(#city, #units, #lang)", cacheManager = "cacheManager")
+    public WeatherDataDTO getCurrentWeatherDataByCity(String city, String units, String lang) {
+        validator.validateCity(city);
+        units = validator.validateUnitOfMeasurement(units);
+        lang = validator.validateLanguage(lang);
+
+        logger.info("Fetching weather forecast for city: {}", city);
+        String url = String.format("%s?q=%s&appid=%s&units=%s&lang=%s", weatherURL, city, apiKey, units, lang);
+
+        return fetchCurrentWeatherData(url);
+    }
+
+    @Override
+    @Cacheable(value = "currentWeather", key = "T(java.util.Objects).hash(#lat, #lon, #units, #lang)", cacheManager = "cacheManager")
+    public WeatherDataDTO getCurrentWeatherDataByCoordinates(double lat, double lon, String units, String lang) {
+        validator.validateCoordinates(lat, lon);
+        units = validator.validateUnitOfMeasurement(units);
+        lang = validator.validateLanguage(lang);
+
+        logger.info("Fetching weather data for coordinates: lat={}, lon={}", lat, lon);
+        String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", weatherURL, lat, lon, apiKey, units, lang);
+
+        return fetchCurrentWeatherData(url);
     }
 
     /**
@@ -52,16 +91,16 @@ public class WeatherServiceImpl implements WeatherService {
      *
      */
     @Override
-    @Cacheable(value = "weatherData", key = "T(java.util.Objects).hash(#city, #units, #lang)", cacheManager = "cacheManager")
+    @Cacheable(value = "forecastWeather", key = "T(java.util.Objects).hash(#city, #units, #lang)", cacheManager = "cacheManager")
     public List<WeatherDataDTO> getListWeatherForecastByCity(String city, String units, String lang) {
         validator.validateCity(city);
         units = validator.validateUnitOfMeasurement(units);
         lang = validator.validateLanguage(lang);
 
         logger.info("Fetching weather forecast for city: {}", city);
-        String url = String.format("%s?q=%s&appid=%s&units=%s&lang=%s", baseURL, city, apiKey, units, lang);
+        String url = String.format("%s?q=%s&appid=%s&units=%s&lang=%s", forecastURL, city, apiKey, units, lang);
 
-        return fetchWeatherData(url);
+        return fetchForecastWeatherData(url);
     }
 
     /**
@@ -76,16 +115,51 @@ public class WeatherServiceImpl implements WeatherService {
      *
      */
     @Override
-    @Cacheable(value = "weatherData", key = "T(java.util.Objects).hash(#lat, #lon, #units, #lang)", cacheManager = "cacheManager")
+    @Cacheable(value = "forecastWeather", key = "T(java.util.Objects).hash(#lat, #lon, #units, #lang)", cacheManager = "cacheManager")
     public List<WeatherDataDTO> getListWeatherForecastByCoordinates(double lat, double lon, String units, String lang) {
         validator.validateCoordinates(lat, lon);
         units = validator.validateUnitOfMeasurement(units);
         lang = validator.validateLanguage(lang);
 
         logger.info("Fetching weather data for coordinates: lat={}, lon={}", lat, lon);
-        String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", baseURL, lat, lon, apiKey, units, lang);
+        String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", forecastURL, lat, lon, apiKey, units, lang);
 
-        return fetchWeatherData(url);
+        return fetchForecastWeatherData(url);
+    }
+
+    /**
+     * Helper method to parse json string of current weather data
+     *
+     * @param url
+     * @return WeatherDataDTO
+     */
+    private WeatherDataDTO fetchCurrentWeatherData(String url) {
+        try {
+            String jsonRequest = restTemplate.getForObject(url, String.class);
+            DocumentContext documentContextWeather = JsonPath.parse(jsonRequest);
+
+            logger.debug("JSON response received: {}", jsonRequest);
+            String cityName = documentContextWeather.read("$.name");
+            String country = documentContextWeather.read("$.sys.country");
+            Integer timezone = documentContextWeather.read("$.timezone");
+            Integer dt = documentContextWeather.read("$.dt");
+            Long unix = dt.longValue();
+
+            WeatherData weatherData = createWeatherData(documentContextWeather, cityName, country, unix, timezone);
+            logger.debug("Current weather data object: {}", weatherData);
+
+            return new WeatherDataDTO(weatherData);
+
+        } catch (HttpClientErrorException.NotFound ex) {
+            logger.error("Coordinates not found: url={}", url, ex);
+            throw new CityNotFoundException();
+        } catch (HttpClientErrorException.Unauthorized ex) {
+            logger.error("Invalid API key used for coordinates: url={}", url, ex);
+            throw new InvalidApiKeyException();
+        } catch (RestClientException ex) {
+            logger.error("Error fetching weather data for URL: {} with exception: {}", url, ex.getMessage(), ex);
+            throw new RuntimeException("Error fetching weather data.", ex);
+        }
     }
 
     /**
@@ -94,7 +168,7 @@ public class WeatherServiceImpl implements WeatherService {
      * @param url
      * @return List<WeatherDataDTO>
      */
-    private List<WeatherDataDTO> fetchWeatherData(String url) {
+    private List<WeatherDataDTO> fetchForecastWeatherData(String url) {
         try {
             String jsonRequest = restTemplate.getForObject(url, String.class);
             DocumentContext documentContext = JsonPath.parse(jsonRequest);
@@ -137,7 +211,7 @@ public class WeatherServiceImpl implements WeatherService {
 
         List<Object> weatherList = documentContext.read("$.list[*]");
 
-        for (int i = 0; i < Math.min(11, weatherList.size()); i++) {
+        for (int i = 0; i < Math.min(10, weatherList.size()); i++) {
             DocumentContext documentContextWeather = JsonPath.parse(weatherList.get(i));
             Integer dt = documentContextWeather.read("$.dt");
             Long unix = dt.longValue();
