@@ -118,7 +118,9 @@ public class WeatherController {
         int hours = Integer.parseInt(time.substring(13, 15));
 
         logger.debug("Time of day to parse: {}, hours: {}", time, hours);
-        if (time.contains("am") && hours > 6 || time.contains("pm") && hours < 6) {
+        if (time.contains("am") && hours > 6 && hours != 12
+                || time.contains("pm") && hours < 6
+                || time.contains("pm") && hours == 12) {
             return "day";
         }
 
