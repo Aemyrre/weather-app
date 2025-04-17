@@ -33,7 +33,7 @@ public class WeatherController {
      * @param city
      * @param units
      * @param lang
-     * @return weather data, time of day and forecasts data to "index.html"
+     * @return weather data, time of day and forecasts data to "weather.html"
      */
     @GetMapping("/search")
     public ModelAndView getListWeatherForecastByCity(@RequestParam String city,
@@ -60,12 +60,19 @@ public class WeatherController {
      * @param lon
      * @param units
      * @param lang
-     * @return weather data, time of day and forecasts data to "index.html"
+     * @return weather data, time of day and forecasts data to "weather.html"
      */
     @GetMapping
-    public ModelAndView getListWeatherForecastByCoordinates(@RequestParam double lat, @RequestParam double lon,
+    public ModelAndView getListWeatherForecastByCoordinates(@RequestParam(required = false) Double lat,
+            @RequestParam(required = false) Double lon,
             @RequestParam(required = false, defaultValue = "metric") String units,
             @RequestParam(required = false, defaultValue = "en") String lang) {
+
+        if (lat == null || lon == null) {
+            logger.warn("Latitude or longitude missing. Returning 'index.html'");
+            ModelAndView modelAndView = new ModelAndView("index");
+            return modelAndView;
+        }
 
         logger.info("Fetching weather data and preparing view model for coordinates: lat={}, lon={}", lat, lon);
         WeatherDataDTO currentWeatherDataDTO = weatherService.getCurrentWeatherDataByCoordinates(lat, lon, units, lang);
@@ -82,12 +89,12 @@ public class WeatherController {
      * @return ModelAndView data
      */
     private ModelAndView generateModelAndView(WeatherDataDTO currentWeatherDataDTO, List<WeatherDataDTO> forecastWeatherDataDTO, String units, Double lat, Double lon) {
-        String timeOfDay = currentWeatherDataDTO.getFormattedDateTime().contains("am") ? "day" : "night";
+        String timeOfDay = generateTimeOfDay(currentWeatherDataDTO.getFormattedDateTime());
 
         logger.debug("Current weather: {}, Time of day: {}, Forecast count: {}",
                 currentWeatherDataDTO.toString(), timeOfDay, forecastWeatherDataDTO.size());
 
-        ModelAndView modelAndView = new ModelAndView("index"); // Remove/add "-test" after/during testing
+        ModelAndView modelAndView = new ModelAndView("weather"); // Remove/add "-test" after/during testing
         modelAndView.addObject("currentWeather", currentWeatherDataDTO);
         modelAndView.addObject("units", units);
         modelAndView.addObject("timeOfDay", timeOfDay);
@@ -99,5 +106,22 @@ public class WeatherController {
         }
 
         return modelAndView;
+    }
+
+    /**
+     * Helper method to determine time of day
+     *
+     * @param time
+     * @return "day" or "night"
+     */
+    private String generateTimeOfDay(String time) {
+        int hours = Integer.parseInt(time.substring(13, 15));
+
+        logger.debug("Time of day to parse: {}, hours: {}", time, hours);
+        if (time.contains("am") && hours > 6 || time.contains("pm") && hours < 6) {
+            return "day";
+        }
+
+        return "night";
     }
 }

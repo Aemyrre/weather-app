@@ -57,7 +57,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index"))
+                .andExpect(view().name("weather"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -97,7 +97,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index"))
+                .andExpect(view().name("weather"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -137,7 +137,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index"))
+                .andExpect(view().name("weather"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -176,7 +176,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index"))
+                .andExpect(view().name("weather"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -385,7 +385,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index"))
+                .andExpect(view().name("weather"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))
@@ -426,7 +426,7 @@ public class WeatherControllerTest {
 
         MvcResult result = mockMvc.perform(get(url))
                 .andExpect(status().isOk())
-                .andExpect(view().name("index"))
+                .andExpect(view().name("weather"))
                 .andExpect(model().attributeExists("currentWeather"))
                 .andExpect(model().attributeExists("timeOfDay"))
                 .andExpect(model().attributeExists("units"))

@@ -61,7 +61,7 @@ public class WeatherServiceImpl implements WeatherService {
         units = validator.validateUnitOfMeasurement(units);
         lang = validator.validateLanguage(lang);
 
-        logger.info("Fetching weather forecast for city: {}", city);
+        logger.info("Fetching current weather forecast for city: {}", city);
         String url = String.format("%s?q=%s&appid=%s&units=%s&lang=%s", weatherURL, city, apiKey, units, lang);
 
         return fetchCurrentWeatherData(url);
@@ -74,7 +74,7 @@ public class WeatherServiceImpl implements WeatherService {
         units = validator.validateUnitOfMeasurement(units);
         lang = validator.validateLanguage(lang);
 
-        logger.info("Fetching weather data for coordinates: lat={}, lon={}", lat, lon);
+        logger.info("Fetching current weather data for coordinates: lat={}, lon={}", lat, lon);
         String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", weatherURL, lat, lon, apiKey, units, lang);
 
         return fetchCurrentWeatherData(url);
