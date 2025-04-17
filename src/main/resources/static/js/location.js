@@ -12,9 +12,15 @@ document.addEventListener("DOMContentLoaded", () => {
 
         console.log(`Geolocation fetched: lat=${lat}, lon=${lon}`);
 
-        // Redirect to the weather endpoint with coordinates
-        window.location.href = `/weather?lat=${lat}&lon=${lon}`;
+        setTimeout(() => {
+          document.body.classList.add("fade-out");
+          setTimeout(() => {
+            // Redirect to the weather endpoint with coordinates
+            window.location.href = `/weather?lat=${lat}&lon=${lon}`; // Redirect to the main page
+          }, 500);
+        }, 1000);
       },
+
       (error) => {
         console.error("Error fetching location:", error.message);
 

@@ -71,6 +71,17 @@
   gap: 1.2rem;
 }
 
+.weather-app-header a:active,
+.weather-app-header a:link {
+  text-decoration: none;
+}
+
+.weather-app-header a:visited,
+.weather-app-header a:hover {
+  text-decoration: none;
+  color: inherit;
+}
+
 .nav-link-img {
   height: 3.5rem;
   width: 3.5rem;
