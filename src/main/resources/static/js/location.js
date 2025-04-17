@@ -1,35 +1,31 @@
 // **************************************************
-// For dynamic fetching of location open opening of website.
+// Geolocation-based redirection logic
 
 document.addEventListener("DOMContentLoaded", () => {
-  const searchInput = document.getElementById("city");
-  const searchForm = document.querySelector(".weather-search-container");
+  console.log("JavaScript is loaded and running.");
 
-  searchForm.addEventListener("submit", (event) => {
-    // Prevent geolocation redirect if city input is used
-    if (searchInput.value) {
-      console.log("City input detected. Proceeding with form submission.");
-      return;
-    }
+  if (navigator.geolocation) {
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
 
-    // Geolocation redirect logic
-    event.preventDefault();
-    if (
-      !localStorage.getItem("geolocationProcessed") &&
-      navigator.geolocation
-    ) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          const lat = position.coords.latitude;
-          const lon = position.coords.longitude;
+        console.log(`Geolocation fetched: lat=${lat}, lon=${lon}`);
 
-          localStorage.setItem("geolocationProcessed", "true");
-          window.location.href = `/weather?lat=${lat}&lon=${lon}`;
-        },
-        (error) => {
-          console.error("Error fetching location:", error.message);
-        }
-      );
-    }
-  });
+        // Redirect to the weather endpoint with coordinates
+        window.location.href = `/weather?lat=${lat}&lon=${lon}`;
+      },
+      (error) => {
+        console.error("Error fetching location:", error.message);
+
+        console.log("Redirect to UAE");
+        window.location.href = `/weather?lat=23.4241&lon=53.8478`;
+      }
+    );
+  } else {
+    console.error("Geolocation is not supported by this browser.");
+
+    console.log("Redirect to Alberta, Canada");
+    window.location.href = `/weather?lat=53.9333&lon=116.5765`;
+  }
 });
