@@ -1,9 +1,497 @@
 <!DOCTYPE html>
-<html lang="en">
+<html
+  lang="en"
+  xmlns="http://www.w3.org/1999/xhtml"
+  xmlns:th="http://www.thymeleaf.org"
+>
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Ramyr Garceniego &ndash; Weather App</title>
+
+    <!-- FONTS -->
+
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=Montserrat:ital,wght@0,100..900;1,100..900&family=Nunito:ital,wght@0,200..1000;1,200..1000&family=Roboto:ital,wght@0,100..900;1,100..900&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- ICON FOR BROWSER TAB -->
+    <!-- STATIC -->
+    <link rel="icon" href="../static/img/other/favicon.png" />
+    <link
+      rel="apple-touch-icon"
+      href="../static/img/other/apple-touch-icon.png"
+    />
+    <link rel="manifest" href="manifest.webmanifest" />
+
+    <!-- THYMELEAF -->
+    <link rel="icon" th:href="@{/img/other/favicon.png}" />
+    <link rel="apple-touch-icon" th:href="@{/img/other/apple-touch-icon.png}" />
+    <link rel="manifest" th:href="manifest.webmanifest" />
+
+    <!-- CSS -->
+    <!-- STATIC -->
+    <link rel="stylesheet" href="../static/css/style.css" />
+    <link rel="stylesheet" href="../static/css/general.css" />
+    <!-- THYMELEAF -->
+    <link rel="stylesheet" th:href="@{/css/th-style.css}" />
+    <link rel="stylesheet" th:href="@{/css/general.css}" />
+    <link rel="stylesheet" th:href="@{/css/style.css}" />
+
+    <!-- JAVASCRIPT -->
+    <!-- STATIC -->
+    <script defer src="../static/js/forecast-scrolling.js"></script>
+    <!-- THYMELEAF -->
+    <script defer th:src="@{/js/forecast-scrolling.js}"></script>
+
+    <!-- Smooth scrolling JS for safari -->
+    <script
+      defer
+      src="https://unpkg.com/smoothscroll-polyfill@0.4.4/dist/smoothscroll.min.js"
+    ></script>
   </head>
-  <body></body>
+  <body>
+    <main
+      class="main-background weather-clear-day-static"
+      th:class="'weather-' + ${currentWeather.weatherMainDescription} + '-' + ${timeOfDay} + ' main-background'"
+      role="img"
+      aria-label="Background image for the whole weather app"
+    >
+      <div class="container">
+        <div class="weather-app-grid blur-background">
+          <!-- WEATHER APP HEADER -->
+          <header class="weather-app-header">
+            <div class="weather-app-introduction">
+              <a
+                href="https://ramyrgarceniego.netlify.app/"
+                target="_self"
+                aria-label="Link to Ramyr's CV Website"
+                rel="noopener noreferrer"
+                title="Return to CV"
+              >
+                <img
+                  class="nav-link-img"
+                  src="../static/img/other/rg-logo.webp"
+                  th:src="@{/img/other/rg-logo.webp}"
+                  alt="Weather App Illustration from undraw.co"
+                />
+              </a>
+              <h1 class="heading-primary">Weather App</h1>
+            </div>
+
+            <form
+              class="weather-search-container"
+              th:action="@{/weather/search}"
+              method="GET"
+            >
+              <!-- Seaerch Bar -->
+              <div class="search-box-container">
+                <input
+                  class="search-box"
+                  type="text"
+                  name="city"
+                  id="city"
+                  placeholder="Entery City"
+                  required
+                />
+                <button type="submit" class="search-symbol">
+                  <img
+                    src="../static/img/other/search-symbol.svg"
+                    th:src="@{/img/other/search-symbol.svg}"
+                    alt="Search symbol, magnifying glass"
+                  />
+                </button>
+              </div>
+              <!-- Unit of Measurement -->
+              <fieldset class="slider-container">
+                <div>
+                  <input
+                    id="metric"
+                    type="radio"
+                    value="metric"
+                    name="units"
+                    th:checked="${units == 'metric'}"
+                  />
+                  <label class="radio-label" for="metric">&deg;C</label>
+                </div>
+
+                <div>
+                  <input
+                    id="imperial"
+                    type="radio"
+                    value="imperial"
+                    name="units"
+                    th:checked="${units == 'imperial'}"
+                  />
+                  <label class="radio-label" for="imperial">&deg;F</label>
+
+                  <span class="slider"></span>
+                </div>
+              </fieldset>
+            </form>
+
+            <nav class="weather-nav">
+              <ul>
+                <li>
+                  <a
+                    href="https://ramyrgarceniego.netlify.app/"
+                    target="_blank"
+                    aria-label="Link to Ramyr's CV Website"
+                    rel="noopener noreferrer"
+                    title="Home"
+                  >
+                    <img
+                      class="nav-link-img"
+                      src="../static/img/nav-link-icon/home-svgrepo-com.svg"
+                      th:src="@{/img/nav-link-icon/home-svgrepo-com.svg}"
+                      alt="Home icon. Link to Ramyr's CV Website"
+                    />
+                  </a>
+                </li>
+                <li>
+                  <a
+                    href="https://github.com/Aemyrre/weather-app"
+                    target="_blank"
+                    aria-label="Link to Ramyr's CV Website"
+                    rel="noopener noreferrer"
+                    title="GitHub Code"
+                  >
+                    <img
+                      class="nav-link-img"
+                      src="../static/img/nav-link-icon/github-svgrepo-com.svg"
+                      th:src="@{/img/nav-link-icon/github-svgrepo-com.svg}"
+                      alt="GitHub icon. Link to Ramyr's Weather App repository"
+                    />
+                  </a>
+                </li>
+
+                <li>
+                  <a
+                    href="https://ramyrgarceniego.netlify.app/#projects"
+                    target="_blank"
+                    aria-label="Link to Ramyr's CV Website"
+                    rel="noopener noreferrer"
+                    title="See other works"
+                  >
+                    <img
+                      class="nav-link-img"
+                      src="../static/img/nav-link-icon/linkedin-svgrepo-com.svg"
+                      th:src="@{/img/nav-link-icon/linkedin-svgrepo-com.svg}"
+                      alt="LinkedIn icon. Link to Ramyr's LinkedIn page"
+                    />
+                  </a>
+                </li>
+              </ul>
+            </nav>
+          </header>
+          <!-- SECTION WEATHER -->
+          <section class="section-weather">
+            <div class="weather-data">
+              <div class="weather-temp-container">
+                <p class="weather-temp temp-font">
+                  <span th:text="${currentWeather.temperature}">31</span
+                  ><span>&deg;</span
+                  ><span th:text="${units == 'metric' ? 'C' : 'F'}">C</span>
+                </p>
+
+                <img
+                  class="weather-description-icon"
+                  src="../static/img/weather-icons/02d.svg"
+                  th:src="@{/img/weather-icons/{weatherIcon}.svg(weatherIcon=${currentWeather.weatherIcon})}"
+                  alt="Weather icon corresponding to the weather description"
+                />
+              </div>
+
+              <div
+                class="weather-data-container weather-data-style weather-data-font-inter"
+              >
+                <p th:text="${currentWeather.weatherDescription}">few clouds</p>
+
+                <div class="weather-data-align">
+                  <p>
+                    <span th:text="${currentWeather.cityName}">Pasay City</span
+                    ><span>,</span>
+                    <span th:text="${currentWeather.country}">PH</span>
+                  </p>
+                  <img
+                    class="weather-data-icon"
+                    src="../static/img/weather-data-img/map-pin.svg"
+                    th:src="@{/img/weather-data-img/map-pin.svg}"
+                    alt="Location icon"
+                  />
+                </div>
+
+                <p
+                  class="remove-text-transform"
+                  th:text="${currentWeather.formattedDateTime}"
+                >
+                  11 Apr 2025, 01:34 PM
+                </p>
+              </div>
+
+              <div
+                class="misc-weather-data weather-data-style weather-data-font-nunito"
+              >
+                <div class="weather-data-align">
+                  <img
+                    class="weather-data-icon"
+                    src="../static/img/weather-data-img/temperature-feels.svg"
+                    th:src="@{/img/weather-data-img/temperature-feels.svg}"
+                    alt="Feels like temperature icon"
+                  />
+                  <p>
+                    <span class="margin-right-text">Feels like:</span>
+                    <span th:text="${currentWeather.tempFeelsLike}">36</span
+                    ><span>&deg;</span
+                    ><span th:text="${units == 'metric' ? 'C' : 'F'}">C</span>
+                  </p>
+                </div>
+
+                <div class="weather-data-align">
+                  <img
+                    class="weather-data-icon"
+                    src="../static/img/weather-data-img/humidity.svg"
+                    th:src="@{/img/weather-data-img/humidity.svg}"
+                    alt="Humidity icon"
+                  />
+                  <p>
+                    <span class="margin-right-text">Humidity:</span>
+                    <span th:text="${currentWeather.humidity}">58</span
+                    ><span>&percnt;</span>
+                  </p>
+                </div>
+
+                <div class="weather-data-align">
+                  <img
+                    class="weather-data-icon"
+                    src="../static/img/weather-data-img/wind.svg"
+                    th:src="@{/img/weather-data-img/wind.svg}"
+                    alt="Wind speed icon"
+                  />
+                  <p>
+                    <span class="margin-right-text">Wind speed:</span>
+                    <span th:text="${currentWeather.windSpeed}">24</span>
+                    <span
+                      class="small-letter"
+                      th:text="${units == 'metric' ? 'm/s' : 'mph'}"
+                      >m/s</span
+                    >
+                  </p>
+                </div>
+              </div>
+            </div>
+          </section>
+          <!-- SECTION FORECAST -->
+          <section class="section-forecast">
+            <!-- FORECAST FARD CONTAINER -->
+            <div class="forecast-cards">
+              <!-- FORECAST CARDS -->
+              <div
+                class="forecast-card weather-data-style weather-data-font-inter"
+                th:each="forecast : ${weatherForecast}"
+              >
+                <div class="forecast-weather">
+                  <p
+                    class="forecast-date"
+                    th:text="${forecast.formattedDateTime}"
+                  >
+                    11 Apr 2025, 03:34 pm
+                  </p>
+                  <p
+                    class="forecast-weather-description margin-bottom-xsm"
+                    th:text="${forecast.weatherDescription}"
+                  >
+                    Shower Rain
+                  </p>
+                  <div class="forecast-display">
+                    <img
+                      class="forecast-img"
+                      src="../static/img/weather-icons/09d.svg"
+                      th:src="@{/img/weather-icons/{weatherIcon}.svg(weatherIcon=${forecast.weatherIcon})}"
+                      alt="Shower rain icon - day"
+                    />
+
+                    <div>
+                      <div
+                        class="disp-flex disp-flex--align-center disp-flex--gap-sm margin-bottom-xsm"
+                      >
+                        <img
+                          class="forecast-temp-img"
+                          src="../static/img/weather-data-img/temperature-list.svg"
+                          th:src="@{/img/weather-data-img/temperature-list.svg}"
+                          alt="Temperature icon"
+                        />
+                        <p class="forecast-data-style">
+                          <span th:text="${forecast.temperature}">33</span
+                          ><span>&deg;</span
+                          ><span th:text="${units == 'metric' ? 'C' : 'F'}"
+                            >C</span
+                          >
+                        </p>
+                      </div>
+                      <div
+                        class="disp-flex disp-flex--align-center disp-flex--gap-sm"
+                      >
+                        <img
+                          class="forecast-temp-img"
+                          src="../static/img/weather-data-img/temperature-feels.svg"
+                          th:src="@{/img/weather-data-img/temperature-feels.svg}"
+                          alt="Feels like temperature icon"
+                        />
+                        <p class="forecast-data-style">
+                          <span th:text="${forecast.tempFeelsLike}">36</span
+                          ><span>&deg;</span
+                          ><span th:text="${units == 'metric' ? 'C' : 'F'}"
+                            >C</span
+                          >
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <!-- FORECAST CARD DUMMY -->
+              <!-- <div
+                class="forecast-card weather-data-style weather-data-font-inter"
+              >
+                <div class="forecast-weather">
+                  <p class="forecast-date">11 Apr 2025, 06:34 pm</p>
+                  <p class="forecast-weather-description margin-bottom-xsm">
+                    Rain
+                  </p>
+                  <div class="forecast-display">
+                    <img
+                      class="forecast-img"
+                      src="../static/img/weather-icons/10n.svg"
+                      alt="Shower rain icon - day"
+                    />
+
+                    <div>
+                      <div
+                        class="disp-flex disp-flex--align-center disp-flex--gap-sm margin-bottom-xsm"
+                      >
+                        <img
+                          class="forecast-temp-img"
+                          src="../static/img/weather-data-img/temperature-list.svg"
+                          alt="Temperature icon"
+                        />
+                        <p class="forecast-data-style">
+                          <span>28</span><span>&deg;</span><span>C</span>
+                        </p>
+                      </div>
+                      <div
+                        class="disp-flex disp-flex--align-center disp-flex--gap-sm"
+                      >
+                        <img
+                          class="forecast-temp-img"
+                          src="../static/img/weather-data-img/temperature-feels.svg"
+                          alt="Feels like temperature icon"
+                        />
+                        <p class="forecast-data-style">
+                          <span>32</span><span>&deg;</span><span>C</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+              <!-- FORECAST CARD DUMMY -->
+              <!-- <div
+                class="forecast-card weather-data-style weather-data-font-inter"
+              >
+                <div class="forecast-weather">
+                  <p class="forecast-date">11 Apr 2025, 09:34 pm</p>
+                  <p class="forecast-weather-description margin-bottom-xsm">
+                    broken clouds
+                  </p>
+                  <div class="forecast-display">
+                    <img
+                      class="forecast-img"
+                      src="../static/img/weather-icons/04n.svg"
+                      alt="Shower rain icon - day"
+                    />
+
+                    <div>
+                      <div
+                        class="disp-flex disp-flex--align-center disp-flex--gap-sm margin-bottom-xsm"
+                      >
+                        <img
+                          class="forecast-temp-img"
+                          src="../static/img/weather-data-img/temperature-list.svg"
+                          alt="Temperature icon"
+                        />
+                        <p class="forecast-data-style">
+                          <span>24</span><span>&deg;</span><span>C</span>
+                        </p>
+                      </div>
+                      <div
+                        class="disp-flex disp-flex--align-center disp-flex--gap-sm"
+                      >
+                        <img
+                          class="forecast-temp-img"
+                          src="../static/img/weather-data-img/temperature-feels.svg"
+                          alt="Feels like temperature icon"
+                        />
+                        <p class="forecast-data-style">
+                          <span>26</span><span>&deg;</span><span>C</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+              <!-- FORECAST CARD DUMMY -->
+              <!-- <div
+                class="forecast-card weather-data-style weather-data-font-inter"
+              >
+                <div class="forecast-weather">
+                  <p class="forecast-date">12 Apr 2025, 12:34 am</p>
+                  <p class="forecast-weather-description margin-bottom-xsm">
+                    clear sky
+                  </p>
+                  <div class="forecast-display">
+                    <img
+                      class="forecast-img"
+                      src="../static/img/weather-icons/01d.svg"
+                      alt="Clear sky icon - day"
+                    />
+
+                    <div>
+                      <div
+                        class="disp-flex disp-flex--align-center disp-flex--gap-sm margin-bottom-xsm"
+                      >
+                        <img
+                          class="forecast-temp-img"
+                          src="../static/img/weather-data-img/temperature-list.svg"
+                          alt="Temperature icon"
+                        />
+                        <p class="forecast-data-style">
+                          <span>24</span><span>&deg;</span><span>C</span>
+                        </p>
+                      </div>
+                      <div
+                        class="disp-flex disp-flex--align-center disp-flex--gap-sm"
+                      >
+                        <img
+                          class="forecast-temp-img"
+                          src="../static/img/weather-data-img/temperature-feels.svg"
+                          alt="Feels like temperature icon"
+                        />
+                        <p class="forecast-data-style">
+                          <span>26</span><span>&deg;</span><span>C</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div> -->
+            </div>
+          </section>
+        </div>
+      </div>
+    </main>
+  </body>
 </html>
