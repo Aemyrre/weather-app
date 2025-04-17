@@ -2,11 +2,6 @@ body {
   background: linear-gradient(to bottom, #0f2027, #203a43);
 }
 
-.fade-out {
-  opacity: 0;
-  transition: opacity 0.5s ease-in-out;
-}
-
 .splash-container {
   height: 100vh;
 
@@ -27,7 +22,6 @@ body {
 }
 
 .text-wrapper span {
-  font-family: "Roboto", Arial, Helvetica, sans-serif;
   font-size: 2.4rem;
   color: #f1e7df;
 

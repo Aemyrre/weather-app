@@ -318,10 +318,6 @@
   height: 100%;
 }
 
-.forecast-carousel-container {
-  /* position: relative; */
-}
-
 .forecast-cards {
   /* position: absolute; */
   overflow-x: auto;
