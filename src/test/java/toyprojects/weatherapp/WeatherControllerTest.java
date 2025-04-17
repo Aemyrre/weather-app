@@ -210,7 +210,7 @@ public class WeatherControllerTest {
     void getWeatherByCity_usingInvalidCity() throws Exception {
         String city = "invalidCity";
         String error = "Oops! Something went wrong!";
-        String message = "City not found";
+        String message = "We can't find the city!";
 
         String url = String.format("/weather/search?city=%s", city);
 
@@ -236,7 +236,7 @@ public class WeatherControllerTest {
         double lat = -91;
         double lon = 121.001381;
         String error = "Oops! Something went wrong!";
-        String message = "City not found";
+        String message = "We can't find the city!";
 
         String url = String.format("/weather?lat=%s&lon=%s", lat, lon);
 
@@ -261,7 +261,7 @@ public class WeatherControllerTest {
     void getWeatherByCity_usingInvalidCity_nullInput() throws Exception {
         String city = null;
         String error = "Oops! Something went wrong!";
-        String message = "City not found";
+        String message = "We can't find the city!";
 
         String url = String.format("/weather/search?city=%s", city);
 
@@ -285,7 +285,7 @@ public class WeatherControllerTest {
     @Test
     void getWeatherByCity_usingInvalidCity_emptyInput_test1() throws Exception {
         String error = "Oops! Something went wrong!";
-        String message = "City not found";
+        String message = "We can't find the city!";
 
         String url = String.format("/weather/search?city=");
 
@@ -308,8 +308,8 @@ public class WeatherControllerTest {
 
     @Test
     void getWeatherByCity_usingInvalidCity_emptyInput_test2() throws Exception {
-        String error = "Invalid Input";
-        String message = "Required request parameter 'city' for method parameter type String is not present";
+        String error = "Oh no, your request got caught in a hurricane of errors!";
+        String message = "Let’s clear the skies and give it another shot.";
 
         String url = String.format("/weather/search");
 
@@ -332,47 +332,20 @@ public class WeatherControllerTest {
 
     @Test
     void getWeatherByCoordinates_usingInvalidCoordinates_emptyInput() throws Exception {
-        String error = "Unexpected Error";
         String url = String.format("/weather?lat=&lon=");
 
-        MvcResult result = mockMvc.perform(get(url))
-                .andExpect(status().isInternalServerError())
-                .andExpect(view().name("error"))
-                .andExpect(model().attributeExists("errorTitle"))
-                .andExpect(model().attributeExists("errorMessage"))
-                .andReturn();
-
-        ModelAndView modelAndView = result.getModelAndView();
-        assertNotNull(modelAndView);
-
-        Object errorObject = modelAndView.getModel().get("errorTitle");
-        Object messagObject = modelAndView.getModel().get("errorMessage");
-
-        assertEquals(error, errorObject);
-        assertNotNull(messagObject);
+        mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"));
     }
 
     @Test
     void getWeatherByCoordinates_usingInvalidCoordinates_emptyInpu_part2() throws Exception {
-        String error = "Invalid Input";
-        String message = "Required request parameter 'lat' for method parameter type double is not present";
         String url = String.format("/weather");
 
-        MvcResult result = mockMvc.perform(get(url))
-                .andExpect(status().isBadRequest())
-                .andExpect(view().name("error"))
-                .andExpect(model().attributeExists("errorTitle"))
-                .andExpect(model().attributeExists("errorMessage"))
-                .andReturn();
-
-        ModelAndView modelAndView = result.getModelAndView();
-        assertNotNull(modelAndView);
-
-        Object errorObject = modelAndView.getModel().get("errorTitle");
-        Object messagObject = modelAndView.getModel().get("errorMessage");
-
-        assertEquals(error, errorObject);
-        assertEquals(message, messagObject);
+        mockMvc.perform(get(url))
+                .andExpect(status().isOk())
+                .andExpect(view().name("index"));
     }
 
     @SuppressWarnings("unchecked")

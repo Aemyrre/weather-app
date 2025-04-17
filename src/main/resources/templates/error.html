@@ -20,15 +20,39 @@
 
     <!-- CSS -->
     <!-- STATIC -->
-    <link rel="stylesheet" href="../static/css/style.css" />
     <link rel="stylesheet" href="../static/css/general.css" />
+    <link rel="stylesheet" href="../static/css/error.css" />
     <!-- THYMELEAF -->
-    <link rel="stylesheet" th:href="@{/css/th-style.css}" />
     <link rel="stylesheet" th:href="@{/css/general.css}" />
-    <link rel="stylesheet" th:href="@{/css/style.css}" />
+    <link rel="stylesheet" th:href="@{/css/error.css}" />
+    <link rel="stylesheet" th:href="@{/css/th-error.css}" />
+
+    <!-- JAVASCRIPT -->
+    <script defer th:src="@{/js/error-redirect.js}"></script>
   </head>
   <body>
-    <div th:text="${errorTitle}">Oops! Something went wrong!</div>
-    <div th:text="${errorMessage}">City not found</div>
+    <main class="container">
+      <div class="error-container">
+        <div
+          class="error-img error-temp-img"
+          th:class="'error-img error-img-' + ${errorImageClass}"
+          role="img"
+          aria-label="Error image display"
+        ></div>
+        <p class="error-text" th:text="${errorTitle}">
+          Oops! Something went wrong...
+        </p>
+        <p class="error-text margin-bottom-sm" th:text="${errorMessage}">
+          We can't find the city!
+        </p>
+        <a
+          class="error-home-btn"
+          href="/"
+          aria-label="Home button to Weather App"
+          title="Go to Weather App"
+          >Go back to Weather App</a
+        >
+      </div>
+    </main>
   </body>
 </html>

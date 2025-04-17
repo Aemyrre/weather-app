@@ -69,7 +69,7 @@ public class WeatherServiceIntegrationTest {
     @Test
     void getCurrentWeatherDataByCity_invalidCity_shouldThrowException() {
         String city = "";
-        String errorMessage = "City not found";
+        String errorMessage = "We can't find the city!";
 
         logger.info("Entering getCurrentWeatherDataByCity with city to retrieve error message: {}", errorMessage);
         CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getCurrentWeatherDataByCity(city, null, null));
@@ -80,7 +80,7 @@ public class WeatherServiceIntegrationTest {
     @Test
     void getCurrentWeatherDataByCity_nullCity_shouldThrowException() {
 
-        String errorMessage = "City not found";
+        String errorMessage = "We can't find the city!";
 
         logger.info("Entering getCurrentWeatherDataByCity with city to retrieve error message: {}", errorMessage);
         CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getCurrentWeatherDataByCity(null, null, null));
@@ -133,7 +133,7 @@ public class WeatherServiceIntegrationTest {
     void getCurrentWeatherDataByCoordinates_invalidCity_shouldThrowException() {
         double lat = -90.1;
         double lon = 180.1;
-        String errorMessage = "City not found";
+        String errorMessage = "We can't find the city!";
 
         logger.info("Entering getCurrentWeatherDataByCoordinates with coordinates to retrieve error message: lat={}, lon={} message={}", lat, lon, errorMessage);
         CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getCurrentWeatherDataByCoordinates(lat, lon, null, null));
@@ -201,7 +201,7 @@ public class WeatherServiceIntegrationTest {
     @Test
     void getListWeatherForecastByCity_invalidCity_shouldThrowException() {
         String city = "";
-        String errorMessage = "City not found";
+        String errorMessage = "We can't find the city!";
 
         logger.info("Entering getListWeatherForecastByCity with city to retrieve error message: {}", city);
         CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getListWeatherForecastByCity(city, null, null));
@@ -259,7 +259,7 @@ public class WeatherServiceIntegrationTest {
     void getListWeatherForecastByCoordinates_invalidCity_shouldThrowException() throws Exception {
         double lat = -90.1;
         double lon = 180.1;
-        String errorMessage = "City not found";
+        String errorMessage = "We can't find the city!";
 
         logger.info("Entering getListWeatherForecastByCoordinates with coordinates to retrieve error message: lat={}, lon={}", lat, lon);
         CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getListWeatherForecastByCoordinates(lat, lon, null, null));

@@ -1,0 +1,15 @@
+.error-img-city-not-found {
+  background-image: url("../img/error-img/error-city-not-found.svg") !important;
+}
+
+.error-img-invalid-input {
+  background-image: url("../img/error-img/error-bad-request.svg") !important;
+}
+
+.error-img-unauthorized {
+  background-image: url("../img/error-img/error-unauthorized.svg") !important;
+}
+
+.unexpected-error {
+  background-image: url("../img/error-img/error-internal.svg") !important;
+}

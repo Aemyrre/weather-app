@@ -18,32 +18,44 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CityNotFoundException.class)
     public ModelAndView handleCityNotFoundException(CityNotFoundException ex, HttpServletResponse response) {
-        return createErrorModelAndView(response, HttpStatus.NOT_FOUND,
+        logger.debug("Error: {}", ex.getMessage());
+        return createErrorModelAndView(response, HttpStatus.NOT_FOUND, "city-not-found",
                 "Oops! Something went wrong!", ex.getMessage());
     }
 
     @ExceptionHandler(InvalidInputException.class)
     public ModelAndView handleInvalidArgumentException(InvalidInputException ex, HttpServletResponse response) {
-        return createErrorModelAndView(response, HttpStatus.BAD_REQUEST,
-                "Invalid Input", ex.getMessage());
+        logger.debug("Error: {}", ex.getMessage());
+        return createErrorModelAndView(response, HttpStatus.BAD_REQUEST, "invalid-input",
+                "Whoopsie-daisy! It seems your input has gone on vacation.", "Let’s reel it back in and try again, shall we?");
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ModelAndView handleInvalidArgumentException(MissingServletRequestParameterException ex, HttpServletResponse response) {
-        return createErrorModelAndView(response, HttpStatus.BAD_REQUEST,
-                "Invalid Input", ex.getMessage());
+        logger.debug("Error: {}", ex.getMessage());
+        return createErrorModelAndView(response, HttpStatus.BAD_REQUEST, "invalid-input",
+                "Oh no, your request got caught in a hurricane of errors!", "Let’s clear the skies and give it another shot.");
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ModelAndView handleIllegalArgumentException(IllegalArgumentException ex, HttpServletResponse response) {
+        logger.debug("Error: {}", ex.getMessage());
+        return createErrorModelAndView(response, HttpStatus.BAD_REQUEST, "unexpected-error",
+                "This input feels like a tornado in a no-fly zone.", "Let’s clear the air and fix it!");
     }
 
     @ExceptionHandler(InvalidApiKeyException.class)
     public ModelAndView handleInvalidApiKeyException(InvalidApiKeyException ex, HttpServletResponse response) {
-        return createErrorModelAndView(response, HttpStatus.UNAUTHORIZED,
-                "Unauthorized", ex.getMessage());
+        logger.debug("Error: {}", ex.getMessage());
+        return createErrorModelAndView(response, HttpStatus.UNAUTHORIZED, "unauthorized",
+                "Oops! You’ve stumbled into a restricted area.", "Let’s get you back on track—authorized personnel only beyond this point!");
     }
 
     @ExceptionHandler(RuntimeException.class)
     public ModelAndView handleRuntimeException(RuntimeException ex, HttpServletResponse response) {
-        return createErrorModelAndView(response, HttpStatus.INTERNAL_SERVER_ERROR,
-                "Unexpected Error", ex.getMessage());
+        logger.debug("Error: {}", ex.getMessage());
+        return createErrorModelAndView(response, HttpStatus.INTERNAL_SERVER_ERROR, "unexpected-error",
+                "It looks like we’ve hit a storm in the code!", "Runtime exception detected—let’s clear the skies and try again.");
     }
 
     /**
@@ -57,12 +69,13 @@ public class GlobalExceptionHandler {
      * @return
      */
     private ModelAndView createErrorModelAndView(HttpServletResponse response,
-            HttpStatus status,
+            HttpStatus status, String errorImageClass,
             String errorTitle, String errorMessage) {
 
-        logger.error("Exception caught in handler: {}", errorMessage);
+        logger.error("Exception caught in handler: error title={}, error message={}", errorTitle, errorMessage);
         response.setStatus(status.value());
         ModelAndView modelAndView = new ModelAndView("error");
+        modelAndView.addObject("errorImageClass", errorImageClass);
         modelAndView.addObject("errorTitle", errorTitle);
         modelAndView.addObject("errorMessage", errorMessage);
 

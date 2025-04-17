@@ -7,6 +7,6 @@ public class CityNotFoundException extends RuntimeException {
     }
 
     public CityNotFoundException() {
-        super("City not found");
+        super("We can't find the city!");
     }
 }
