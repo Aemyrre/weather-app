@@ -54,7 +54,7 @@
   grid-row: 1/2;
 
   display: grid;
-  grid-template-columns: 230px 1fr 135px;
+  grid-template-columns: 165px 1fr 135px;
   column-gap: 3.2rem;
   width: 100%;
   align-items: center;
@@ -319,23 +319,20 @@
 }
 
 .forecast-cards {
-  /* position: absolute; */
-  overflow-x: auto;
+  overflow-x: scroll;
   scroll-behavior: smooth;
   scroll-snap-align: start;
-  scroll-snap-type: x mandatory;
+  scroll-snap-type: x proximity;
 
   margin: 0 auto;
   padding: 5px 10px 20px;
 
   display: flex;
   gap: 5%;
-
-  min-width: 33.33%;
 }
 
 .forecast-card {
-  flex: 0 0 30%;
+  flex: 0 0 calc(30%);
 
   background-color: #faf9f6;
   border-radius: 11px;
