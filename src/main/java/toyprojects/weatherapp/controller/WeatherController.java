@@ -1,6 +1,9 @@
 package toyprojects.weatherapp.controller;
 
+import java.time.Duration;
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,8 +13,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.ModelAndView;
 
+import io.github.bucket4j.Bandwidth;
+import io.github.bucket4j.Bucket;
+import io.github.bucket4j.Refill;
+import jakarta.servlet.http.HttpServletRequest;
 import toyprojects.weatherapp.entity.WeatherDataDTO;
-import toyprojects.weatherapp.exception.CityNotFoundException;
+import toyprojects.weatherapp.exception.RateLimitExceededException;
 import toyprojects.weatherapp.service.WeatherService;
 
 @Controller
@@ -19,6 +26,8 @@ import toyprojects.weatherapp.service.WeatherService;
 public class WeatherController {
 
     private final WeatherService weatherService;
+
+    private final Map<String, Bucket> rateLimitBuckets = new ConcurrentHashMap<>();
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherController.class);
 
@@ -38,15 +47,34 @@ public class WeatherController {
     @GetMapping("/search")
     public ModelAndView getListWeatherForecastByCity(@RequestParam String city,
             @RequestParam(required = false, defaultValue = "metric") String units,
-            @RequestParam(required = false, defaultValue = "en") String lang) {
+            @RequestParam(required = false, defaultValue = "en") String lang,
+            HttpServletRequest request) {
 
-        if (city == null || city.isEmpty()) {
-            throw new CityNotFoundException();
+        String clientIp = request.getRemoteAddr();
+        Bucket bucket = rateLimitBuckets.computeIfAbsent(clientIp, (ip)
+                -> Bucket.builder()
+                        .addLimit(Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(2))))
+                        .build());
+
+        WeatherDataDTO currentWeatherDataDTO = weatherService.getCachedCurrentWeatherDataByCity(city, units, lang);
+
+        if (currentWeatherDataDTO != null) {
+            logger.info("Weather retrieved from cache. City={}", city);
+        } else {
+            if (!bucket.tryConsume(1)) {
+                logger.warn("Rate limit exceeded for IP: {}", clientIp);
+                throw new RateLimitExceededException();
+            }
+
+            logger.info("Weather retrieved from API. City={}", city);
+            currentWeatherDataDTO = weatherService.getCurrentWeatherDataByCity(city, units, lang);
         }
 
-        logger.info("Fetching weather data and preparing view model for city: {}", city);
-        WeatherDataDTO currentWeatherDataDTO = weatherService.getCurrentWeatherDataByCity(city, units, lang);
         List<WeatherDataDTO> forecastWeatherDataDTO = weatherService.getListWeatherForecastByCity(city, units, lang);
+
+        logger.info("Rate limiting applied only for API requests, not cached data.");
+        logger.info("Client IP: {}", clientIp);
+        logger.info("Remaining rate limit: {}", bucket.getAvailableTokens());
 
         return generateModelAndView(currentWeatherDataDTO, forecastWeatherDataDTO, units, null, null);
     }
@@ -66,7 +94,14 @@ public class WeatherController {
     public ModelAndView getListWeatherForecastByCoordinates(@RequestParam(required = false) Double lat,
             @RequestParam(required = false) Double lon,
             @RequestParam(required = false, defaultValue = "metric") String units,
-            @RequestParam(required = false, defaultValue = "en") String lang) {
+            @RequestParam(required = false, defaultValue = "en") String lang,
+            HttpServletRequest request) {
+
+        String clientIp = request.getRemoteAddr();
+        Bucket bucket = rateLimitBuckets.computeIfAbsent(clientIp, (ip)
+                -> Bucket.builder()
+                        .addLimit(Bandwidth.classic(10, Refill.greedy(10, Duration.ofMinutes(10))))
+                        .build());
 
         if (lat == null || lon == null) {
             logger.warn("Latitude or longitude missing. Returning 'index.html'");
@@ -74,9 +109,25 @@ public class WeatherController {
             return modelAndView;
         }
 
-        logger.info("Fetching weather data and preparing view model for coordinates: lat={}, lon={}", lat, lon);
-        WeatherDataDTO currentWeatherDataDTO = weatherService.getCurrentWeatherDataByCoordinates(lat, lon, units, lang);
+        WeatherDataDTO currentWeatherDataDTO = weatherService.getCachedCurrentWeatherDataByCoordinates(lat, lon, units, lang);
+
+        if (currentWeatherDataDTO != null) {
+            logger.info("Weather retrieved from cache. lat={}, lon={}", lat, lon);
+        } else {
+            if (!bucket.tryConsume(1)) {
+                logger.warn("Rate limit exceeded for IP: {}", clientIp);
+                throw new RateLimitExceededException();
+            }
+
+            logger.info("Weather retrieved from API. lat={}, lon={}", lat, lon);
+            currentWeatherDataDTO = weatherService.getCurrentWeatherDataByCoordinates(lat, lon, units, lang);
+        }
+
         List<WeatherDataDTO> forecastWeatherDataDTO = weatherService.getListWeatherForecastByCoordinates(lat, lon, units, lang);
+
+        logger.info("Rate limiting applied only for API requests, not cached data.");
+        logger.info("Client IP: {}", clientIp);
+        logger.info("Remaining rate limit: {}", bucket.getAvailableTokens());
 
         return generateModelAndView(currentWeatherDataDTO, forecastWeatherDataDTO, units, lat, lon);
     }
@@ -94,7 +145,7 @@ public class WeatherController {
         logger.debug("Current weather: {}, Time of day: {}, Forecast count: {}",
                 currentWeatherDataDTO.toString(), timeOfDay, forecastWeatherDataDTO.size());
 
-        ModelAndView modelAndView = new ModelAndView("weather"); // Remove/add "-test" after/during testing
+        ModelAndView modelAndView = new ModelAndView("weather");
         modelAndView.addObject("currentWeather", currentWeatherDataDTO);
         modelAndView.addObject("units", units);
         modelAndView.addObject("timeOfDay", timeOfDay);

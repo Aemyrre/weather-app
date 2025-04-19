@@ -20,6 +20,9 @@ public class WeatherDataDTO {
 
     private int windSpeed;
 
+    private String sunrise;
+    private String sunset;
+
     private String formattedDateTime;
 
     public WeatherDataDTO() {
@@ -39,6 +42,8 @@ public class WeatherDataDTO {
         this.humidity = source.getHumidity();
         this.windSpeed = source.getWindSpeed();
         this.formattedDateTime = source.getFormattedDateTime();
+        this.sunrise = source.getSunrise();
+        this.sunset = source.getSunset();
     }
 
     public String getCityName() {
@@ -93,6 +98,14 @@ public class WeatherDataDTO {
         return this.formattedDateTime;
     }
 
+    public String getSunrise() {
+        return this.sunrise;
+    }
+
+    public String getSunset() {
+        return this.sunset;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (o == this) {
@@ -102,18 +115,18 @@ public class WeatherDataDTO {
             return false;
         }
         WeatherDataDTO weatherDataDTO = (WeatherDataDTO) o;
-        return Objects.equals(cityName, weatherDataDTO.cityName) && Objects.equals(country, weatherDataDTO.country) && weatherId == weatherDataDTO.weatherId && Objects.equals(weatherMainDescription, weatherDataDTO.weatherMainDescription) && Objects.equals(weatherDescription, weatherDataDTO.weatherDescription) && Objects.equals(weatherIcon, weatherDataDTO.weatherIcon) && Objects.equals(temperature, weatherDataDTO.temperature) && Objects.equals(tempFeelsLike, weatherDataDTO.tempFeelsLike) && Objects.equals(minTemp, weatherDataDTO.minTemp) && Objects.equals(maxTemp, weatherDataDTO.maxTemp) && humidity == weatherDataDTO.humidity && Objects.equals(windSpeed, weatherDataDTO.windSpeed) && Objects.equals(formattedDateTime, weatherDataDTO.formattedDateTime);
+        return Objects.equals(cityName, weatherDataDTO.cityName) && Objects.equals(country, weatherDataDTO.country) && weatherId == weatherDataDTO.weatherId && Objects.equals(weatherMainDescription, weatherDataDTO.weatherMainDescription) && Objects.equals(weatherDescription, weatherDataDTO.weatherDescription) && Objects.equals(weatherIcon, weatherDataDTO.weatherIcon) && temperature == weatherDataDTO.temperature && tempFeelsLike == weatherDataDTO.tempFeelsLike && minTemp == weatherDataDTO.minTemp && maxTemp == weatherDataDTO.maxTemp && humidity == weatherDataDTO.humidity && windSpeed == weatherDataDTO.windSpeed && Objects.equals(sunrise, weatherDataDTO.sunrise) && Objects.equals(sunset, weatherDataDTO.sunset) && Objects.equals(formattedDateTime, weatherDataDTO.formattedDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
+        return Objects.hash(cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, sunrise, sunset, formattedDateTime);
     }
 
     @Override
     public String toString() {
-        String str = String.format("WeatherData{city:'%s', country:'%s', weatherId:'%s', weatherMainDescription:'%s', weatherDescription:'%s', weatherIcon:'%s', temperature:'%s', tempFeelsLike:'%s', minTemp:'%s', maxTemp:'%s', humidity:'%s', windSpeed:'%s', formattedDateTime:'%s'}",
-                cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
+        String str = String.format("WeatherData{city:'%s', country:'%s', weatherId:'%s', weatherMainDescription:'%s', weatherDescription:'%s', weatherIcon:'%s', temperature:'%s', tempFeelsLike:'%s', minTemp:'%s', maxTemp:'%s', humidity:'%s', windSpeed:'%s', formattedDateTime:'%s', sunrise:'%s', sunet:'%s'}",
+                cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime, sunrise, sunset);
         return str;
     }
 

@@ -10,6 +10,10 @@ public interface WeatherService {
 
     WeatherDataDTO getCurrentWeatherDataByCoordinates(double lat, double lon, String units, String lang);
 
+    WeatherDataDTO getCachedCurrentWeatherDataByCity(String city, String units, String lang);
+
+    WeatherDataDTO getCachedCurrentWeatherDataByCoordinates(double lat, double lon, String units, String lang);
+
     List<WeatherDataDTO> getListWeatherForecastByCity(String city, String units, String lang);
 
     List<WeatherDataDTO> getListWeatherForecastByCoordinates(double lat, double lon, String units, String lang);

@@ -7,6 +7,8 @@ import java.util.stream.Collectors;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.Cache;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.HttpClientErrorException;
@@ -37,11 +39,14 @@ public class WeatherServiceImpl implements WeatherService {
     private final RestTemplate restTemplate;
     private final WeatherParameterValidation validator;
 
+    private final CacheManager cacheManager;
+
     private static final Logger logger = LoggerFactory.getLogger(WeatherServiceImpl.class);
 
-    public WeatherServiceImpl(RestTemplate restTemplate, WeatherParameterValidation validator) {
+    public WeatherServiceImpl(RestTemplate restTemplate, WeatherParameterValidation validator, CacheManager cacheManager) {
         this.restTemplate = restTemplate;
         this.validator = validator;
+        this.cacheManager = cacheManager;
     }
 
     /**
@@ -67,6 +72,17 @@ public class WeatherServiceImpl implements WeatherService {
         return fetchCurrentWeatherData(url);
     }
 
+    /**
+     * Fetches current weather data using coordinates (latitude, longitude) for
+     * the controller
+     *
+     * @param lat
+     * @param lon
+     * @param units
+     * @param lang
+     *
+     * @return WeatherDataDTO
+     */
     @Override
     @Cacheable(value = "currentWeather", key = "T(java.util.Objects).hash(#lat, #lon, #units, #lang)", cacheManager = "cacheManager")
     public WeatherDataDTO getCurrentWeatherDataByCoordinates(double lat, double lon, String units, String lang) {
@@ -78,6 +94,48 @@ public class WeatherServiceImpl implements WeatherService {
         String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", weatherURL, lat, lon, apiKey, units, lang);
 
         return fetchCurrentWeatherData(url);
+    }
+
+    /**
+     * Manually fetches cached current weather data using city name for the
+     * controller
+     *
+     * @param city
+     * @param units
+     * @param lang
+     *
+     * @return WeatherDataDTO
+     *
+     */
+    @Override
+    public WeatherDataDTO getCachedCurrentWeatherDataByCity(String city, String units, String lang) {
+        Cache cache = cacheManager.getCache("currentWeather");
+        if (cache != null) {
+            Object cacheKey = java.util.Objects.hash(city, units, lang);
+            return cache.get(cacheKey, WeatherDataDTO.class);
+        }
+        return null;
+    }
+
+    /**
+     * Manually fetches cached current weather data using coordinates (latitude,
+     * longitude) for the controller
+     *
+     * @param lat
+     * @param lon
+     * @param units
+     * @param lang
+     *
+     * @return WeatherDataDTO
+     */
+    @Override
+    public WeatherDataDTO getCachedCurrentWeatherDataByCoordinates(double lat, double lon, String units, String lang) {
+        Cache cache = cacheManager.getCache("currentWeather");
+        if (cache != null) {
+            Object cacheKey = java.util.Objects.hash(lat, lon, units, lang);
+            return cache.get(cacheKey, WeatherDataDTO.class);
+        }
+        return null;
     }
 
     /**
@@ -141,11 +199,17 @@ public class WeatherServiceImpl implements WeatherService {
             logger.debug("JSON response received: {}", jsonRequest);
             String cityName = documentContextWeather.read("$.name");
             String country = documentContextWeather.read("$.sys.country");
+
             Integer timezone = documentContextWeather.read("$.timezone");
             Integer dt = documentContextWeather.read("$.dt");
-            Long unix = dt.longValue();
+            Integer dtSunrise = documentContextWeather.read("$.sys.sunrise");
+            Integer dtSunset = documentContextWeather.read("$.sys.sunset");
 
-            WeatherData weatherData = createWeatherData(documentContextWeather, cityName, country, unix, timezone);
+            Long unix = dt.longValue();
+            Long sunrise = dtSunrise.longValue();
+            Long sunset = dtSunset.longValue();
+
+            WeatherData weatherData = createWeatherData(documentContextWeather, cityName, country, unix, timezone, sunrise, sunset);
             logger.debug("Current weather data object: {}", weatherData);
 
             return new WeatherDataDTO(weatherData);
@@ -215,7 +279,8 @@ public class WeatherServiceImpl implements WeatherService {
             DocumentContext documentContextWeather = JsonPath.parse(weatherList.get(i));
             Integer dt = documentContextWeather.read("$.dt");
             Long unix = dt.longValue();
-            weatherDataList.add(createWeatherData(documentContextWeather, cityName, country, unix, timezone));
+
+            weatherDataList.add(createWeatherData(documentContextWeather, cityName, country, unix, timezone, null, null));
         }
 
         return weatherDataList;
@@ -231,12 +296,7 @@ public class WeatherServiceImpl implements WeatherService {
      * @param timezone
      * @return
      */
-    private WeatherData createWeatherData(DocumentContext documentContext, String cityName, String country, Long unix, Integer timezone) {
-        if (unix == null) {
-            Integer unixInt = documentContext.read("$.dt");
-            unix = unixInt.longValue();
-        }
-
+    private WeatherData createWeatherData(DocumentContext documentContext, String cityName, String country, Long unix, Integer timezone, Long sunrise, Long sunset) {
         return new WeatherData(
                 cityName != null ? cityName : documentContext.read("$.name"),
                 country != null ? country : documentContext.read("$.sys.country"),
@@ -251,7 +311,10 @@ public class WeatherServiceImpl implements WeatherService {
                 documentContext.read("$.main.humidity"),
                 ((Number) documentContext.read("$.wind.speed")).doubleValue(),
                 unix,
-                timezone != null ? timezone : documentContext.read("$.timezone")
+                timezone != null ? timezone : documentContext.read("$.timezone"),
+                sunrise,
+                sunset
         );
     }
+
 }

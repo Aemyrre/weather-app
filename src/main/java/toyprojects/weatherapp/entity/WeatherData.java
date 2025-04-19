@@ -24,25 +24,31 @@ public class WeatherData {
 
     private int windSpeed;
 
+    private String sunrise;
+    private String sunset;
+
     private String formattedDateTime;
 
     public WeatherData() {
     }
 
-    public WeatherData(String cityName, String country, int weatherId, String weatherMainDescription, String weatherDescription, String weatherIcon, double temperature, double tempFeelsLike, double minTemp, double maxTemp, int humidity, double windSpeed, Long unix, Integer timezone) {
-        this.cityName = cityName;
-        this.country = country;
-        this.weatherId = weatherId;
-        this.weatherMainDescription = weatherMainDescription.toLowerCase();
-        this.weatherDescription = weatherDescription;
-        this.weatherIcon = weatherIcon;
-        this.temperature = (int) Math.round(temperature);
-        this.tempFeelsLike = (int) Math.round(tempFeelsLike);
-        this.minTemp = (int) Math.round(minTemp);
-        this.maxTemp = (int) Math.round(maxTemp);
-        this.humidity = humidity;
-        this.windSpeed = (int) Math.round(windSpeed);
-        this.formattedDateTime = convertUnixToDateTime(unix, timezone);
+    @SuppressWarnings("OverridableMethodCallInConstructor")
+    public WeatherData(String cityName, String country, int weatherId, String weatherMainDescription, String weatherDescription, String weatherIcon, double temperature, double tempFeelsLike, double minTemp, double maxTemp, int humidity, double windSpeed, Long unix, Integer timezone, Long sunrise, Long sunset) {
+        setCityName(cityName);
+        setCountry(country);
+        setWeatherId(weatherId);
+        setWeatherMainDescription(weatherMainDescription);
+        setWeatherDescription(weatherDescription);
+        setWeatherIcon(weatherIcon);
+        setTemperature(temperature);
+        setTempFeelsLike(tempFeelsLike);
+        setMaxTemp(maxTemp);
+        setMinTemp(minTemp);
+        setHumidity(humidity);
+        setWindSpeed(windSpeed);
+        setFormattedDateTime(unix, timezone);
+        setSunrise(sunrise, timezone);
+        setSunset(sunset, timezone);
     }
 
     private String convertUnixToDateTime(Long unixTime, Integer timeZone) {
@@ -78,11 +84,11 @@ public class WeatherData {
     }
 
     public String getWeatherMainDescription() {
-        return this.weatherMainDescription.toLowerCase();
+        return this.weatherMainDescription;
     }
 
     public void setWeatherMainDescription(String weatherMainDescription) {
-        this.weatherMainDescription = weatherMainDescription;
+        this.weatherMainDescription = weatherMainDescription.toLowerCase();
     }
 
     public String getWeatherDescription() {
@@ -105,32 +111,32 @@ public class WeatherData {
         return this.temperature;
     }
 
-    public void setTemperature(int temperature) {
-        this.temperature = temperature;
+    public void setTemperature(double temperature) {
+        this.temperature = (int) Math.round(temperature);
     }
 
     public int getTempFeelsLike() {
         return this.tempFeelsLike;
     }
 
-    public void setTempFeelsLike(int tempFeelsLike) {
-        this.tempFeelsLike = tempFeelsLike;
+    public void setTempFeelsLike(double tempFeelsLike) {
+        this.tempFeelsLike = (int) Math.round(tempFeelsLike);
     }
 
     public int getMinTemp() {
         return this.minTemp;
     }
 
-    public void setMinTemp(int minTemp) {
-        this.minTemp = minTemp;
+    public void setMinTemp(double minTemp) {
+        this.minTemp = (int) Math.round(minTemp);
     }
 
     public int getMaxTemp() {
         return this.maxTemp;
     }
 
-    public void setMaxTemp(int maxTemp) {
-        this.maxTemp = maxTemp;
+    public void setMaxTemp(double maxTemp) {
+        this.maxTemp = (int) Math.round(maxTemp);
     }
 
     public int getHumidity() {
@@ -145,8 +151,8 @@ public class WeatherData {
         return this.windSpeed;
     }
 
-    public void setWindSpeed(int windSpeed) {
-        this.windSpeed = windSpeed;
+    public void setWindSpeed(double windSpeed) {
+        this.windSpeed = (int) Math.round(windSpeed);
     }
 
     public String getFormattedDateTime() {
@@ -154,7 +160,35 @@ public class WeatherData {
     }
 
     public void setFormattedDateTime(Long unix, Integer timezone) {
-        this.formattedDateTime = convertUnixToDateTime(unix, timezone);
+        if (unix == null) {
+            this.formattedDateTime = null;
+        } else {
+            this.formattedDateTime = convertUnixToDateTime(unix, timezone);
+        }
+    }
+
+    public String getSunrise() {
+        return this.sunrise;
+    }
+
+    public void setSunrise(Long sunrise, Integer timezone) {
+        if (sunrise == null) {
+            this.sunrise = null;
+        } else {
+            this.sunrise = convertUnixToDateTime(sunrise, timezone).substring(13);
+        }
+    }
+
+    public String getSunset() {
+        return this.sunset;
+    }
+
+    public void setSunset(Long sunset, Integer timezone) {
+        if (sunset == null) {
+            this.sunset = null;
+        } else {
+            this.sunset = convertUnixToDateTime(sunset, timezone).substring(13);
+        }
     }
 
     @Override
@@ -166,18 +200,18 @@ public class WeatherData {
             return false;
         }
         WeatherData weatherData = (WeatherData) o;
-        return Objects.equals(cityName, weatherData.cityName) && Objects.equals(country, weatherData.country) && weatherId == weatherData.weatherId && Objects.equals(weatherMainDescription, weatherData.weatherMainDescription) && Objects.equals(weatherDescription, weatherData.weatherDescription) && Objects.equals(weatherIcon, weatherData.weatherIcon) && Objects.equals(temperature, weatherData.temperature) && Objects.equals(tempFeelsLike, weatherData.tempFeelsLike) && Objects.equals(minTemp, weatherData.minTemp) && Objects.equals(maxTemp, weatherData.maxTemp) && humidity == weatherData.humidity && Objects.equals(windSpeed, weatherData.windSpeed) && Objects.equals(formattedDateTime, weatherData.formattedDateTime);
+        return Objects.equals(cityName, weatherData.cityName) && Objects.equals(country, weatherData.country) && weatherId == weatherData.weatherId && Objects.equals(weatherMainDescription, weatherData.weatherMainDescription) && Objects.equals(weatherDescription, weatherData.weatherDescription) && Objects.equals(weatherIcon, weatherData.weatherIcon) && temperature == weatherData.temperature && tempFeelsLike == weatherData.tempFeelsLike && minTemp == weatherData.minTemp && maxTemp == weatherData.maxTemp && humidity == weatherData.humidity && windSpeed == weatherData.windSpeed && Objects.equals(sunrise, weatherData.sunrise) && Objects.equals(sunset, weatherData.sunset) && Objects.equals(formattedDateTime, weatherData.formattedDateTime);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cityName, country, weatherId, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
+        return Objects.hash(cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, sunrise, sunset, formattedDateTime);
     }
 
     @Override
     public String toString() {
-        String str = String.format("WeatherData{city:'%s', country:'%s', weatherId:'%s', weatherMainDescription:'%s', weatherDescription:'%s', weatherIcon:'%s', temperature:'%s', tempFeelsLike:'%s', minTemp:'%s', maxTemp:'%s', humidity:'%s', windSpeed:'%s', formattedDateTime:'%s'}",
-                cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime);
+        String str = String.format("WeatherData{city:'%s', country:'%s', weatherId:'%s', weatherMainDescription:'%s', weatherDescription:'%s', weatherIcon:'%s', temperature:'%s', tempFeelsLike:'%s', minTemp:'%s', maxTemp:'%s', humidity:'%s', windSpeed:'%s', formattedDateTime:'%s', sunrise:'%s', sunset:'%s'}",
+                cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, formattedDateTime, sunrise, sunset);
         return str;
     }
 
