@@ -8,22 +8,22 @@ Users can search for current weather conditions and receive detailed information
 ## Features
 
 - **Search for Weather Information**: Enter the name of a city to retrieve weather information.
-- **Display Weather Data**: Show current weather conditions including temperature, humidity, wind speed, and weather descriptions.
+- **Display Weather Data**: Show current weather conditions including temperature, humidity, wind speed, sunrise, sunset and weather descriptions.
 - **Error Handling**: Display user-friendly error messages if the city is not found or if there is an issue with the API.
-- **Weather Forecast**: Display a 3-hour/5-day weather forecast for the selected city.
-
-### Optional Features (Coming Soon)
-
-- **Geolocation**: Automatically detect the user’s location and display the weather for their current city.
-- **User Preferences**: Let users save their favorite cities for quick access.
-- **GUI Enhancements**: Use HTML, CSS, and Thymeleaf for an improved frontend experience.
+- **Weather Forecast**: Display a 3-hour/30-hour weather forecast for the selected city.
+- **Geolocation**: Automatically detect the user’s location using Javascript's geolocation and display the weather using coordinates.
+- **GUI Enhancements**: Use HTML, CSS, Javascript and Thymeleaf for an improved frontend experience.
+- **User Preferences**: Let users choose between metric and imperial units.
+- **Rate Limiting**: Ensure fair usage by limiting the number of API requests per user.
+- **Caching**: Improve performance and reduce API calls using in-memory caching.
 
 ## Technologies Used
 
-### Frontend (GUI) (Coming Soon)
+### Frontend (GUI)
 
 - **HTML**: Structure the content of the web pages.
 - **CSS**: Style and design the web pages for a better visual experience.
+- **Javascript**: Enable geolocation and smooth page transitions.
 - **Thymeleaf**: A Java template engine that integrates with Spring Boot to create dynamic web pages.
 
 ### Backend
@@ -33,6 +33,8 @@ Users can search for current weather conditions and receive detailed information
 - **Spring Data JPA/PostgreSQL (Coming Soon)**: (Coming Soon) Database for storing user preferences or historical data.
 - **RestTemplate**: For making RESTful API calls to the OpenWeatherMap API.
 - **JUnit**: Testing framework for writing and running unit tests.
+- **Caffeine Cache**: Used for in-memory caching of weather data to improve performance.
+- **Bucket4j**: Library used for implementing rate limiting to control API requests.
 - **Mockito**: Framework for creating mock objects and writing unit tests.
 - **OpenWeatherMap API**: Public API used for fetching weather data.
 
@@ -57,6 +59,8 @@ Enter the name of a city in the search box to retrieve weather information.
 
 ## Screenshots
 
+### API
+
 1. Using single argument (i.e., name of place)
 <div align="center" width="229" height="431.5">
 <!-- ![image](https://github.com/user-attachments/assets/6278ef9e-a293-4e56-8ced-cf5a61dcba37) -->
@@ -68,6 +72,10 @@ Enter the name of a city in the search box to retrieve weather information.
 <!-- ![image](https://github.com/user-attachments/assets/381fff3f-bb3f-4214-b75b-5f0039fc2d7d) -->
    <img src="https://github.com/user-attachments/assets/381fff3f-bb3f-4214-b75b-5f0039fc2d7d" alt="RESTful API Weather app screenshot-2"/>
 </div>
+
+### Server-Side Rendering
+
+1. Using `ssr` branch and `http://localhost:8080`
 
 ## License
 
