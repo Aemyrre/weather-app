@@ -4,5 +4,5 @@ document.addEventListener("DOMContentLoaded", () => {
     setTimeout(() => {
       window.location.href = `/weather`;
     }, 500);
-  }, 3_000);
+  }, 5_000);
 });

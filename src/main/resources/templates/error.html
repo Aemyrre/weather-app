@@ -41,12 +41,14 @@
           role="img"
           aria-label="Error image display"
         ></div>
-        <p class="error-text" th:text="${errorTitle}">
-          Oops! Something went wrong...
-        </p>
-        <p class="error-text margin-bottom-sm" th:text="${errorMessage}">
-          We can't find the city!
-        </p>
+        <div class="align-center-text">
+          <p class="error-text" th:text="${errorTitle}">
+            Oops! Something went wrong...
+          </p>
+          <p class="error-text margin-bottom-sm" th:text="${errorMessage}">
+            We can't find the city!
+          </p>
+        </div>
         <a
           class="error-home-btn"
           href="/"

@@ -1,19 +1,27 @@
+main {
+  margin: 0 auto !important;
+}
+
 .error-container {
   height: 100vh;
   display: flex;
   flex-direction: column;
+
+  flex-basis: content;
 
   align-items: center;
   justify-content: center;
 }
 
 .error-text {
-  font-size: 3.2rem;
+  font-size: 3rem;
 }
 
 .error-img {
-  height: 40rem;
-  width: 40rem;
+  height: 30rem;
+  width: 30rem;
+
+  display: block;
 
   background-size: cover;
   background-repeat: no-repeat;

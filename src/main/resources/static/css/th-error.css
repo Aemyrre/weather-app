@@ -10,6 +10,14 @@
   background-image: url("../img/error-img/error-unauthorized.svg") !important;
 }
 
-.unexpected-error {
+.error-img-unexpected-error {
   background-image: url("../img/error-img/error-internal.svg") !important;
+}
+
+.error-img-unknown-error {
+  background-image: url("../img/error-img/error-unknown.svg") !important;
+}
+
+.error-img-limit {
+  background-image: url("../img/error-img/error-limit.svg") !important;
 }

@@ -18,44 +18,59 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(CityNotFoundException.class)
     public ModelAndView handleCityNotFoundException(CityNotFoundException ex, HttpServletResponse response) {
-        logger.debug("Error: {}", ex.getMessage());
+        logger.error("Error: {}", ex.getMessage());
         return createErrorModelAndView(response, HttpStatus.NOT_FOUND, "city-not-found",
                 "Oops! Something went wrong!", ex.getMessage());
     }
 
     @ExceptionHandler(InvalidInputException.class)
     public ModelAndView handleInvalidArgumentException(InvalidInputException ex, HttpServletResponse response) {
-        logger.debug("Error: {}", ex.getMessage());
+        logger.error("Error: {}", ex.getMessage());
         return createErrorModelAndView(response, HttpStatus.BAD_REQUEST, "invalid-input",
                 "Whoopsie-daisy! It seems your input has gone on vacation.", "Let’s reel it back in and try again, shall we?");
     }
 
     @ExceptionHandler(MissingServletRequestParameterException.class)
     public ModelAndView handleInvalidArgumentException(MissingServletRequestParameterException ex, HttpServletResponse response) {
-        logger.debug("Error: {}", ex.getMessage());
+        logger.error("Error: {}", ex.getMessage());
         return createErrorModelAndView(response, HttpStatus.BAD_REQUEST, "invalid-input",
                 "Oh no, your request got caught in a hurricane of errors!", "Let’s clear the skies and give it another shot.");
     }
 
     @ExceptionHandler(IllegalArgumentException.class)
     public ModelAndView handleIllegalArgumentException(IllegalArgumentException ex, HttpServletResponse response) {
-        logger.debug("Error: {}", ex.getMessage());
+        logger.error("Error: {}", ex.getMessage());
         return createErrorModelAndView(response, HttpStatus.BAD_REQUEST, "unexpected-error",
                 "This input feels like a tornado in a no-fly zone.", "Let’s clear the air and fix it!");
     }
 
     @ExceptionHandler(InvalidApiKeyException.class)
     public ModelAndView handleInvalidApiKeyException(InvalidApiKeyException ex, HttpServletResponse response) {
-        logger.debug("Error: {}", ex.getMessage());
+        logger.error("Error: {}", ex.getMessage());
         return createErrorModelAndView(response, HttpStatus.UNAUTHORIZED, "unauthorized",
                 "Oops! You’ve stumbled into a restricted area.", "Let’s get you back on track—authorized personnel only beyond this point!");
     }
 
+    @ExceptionHandler(RateLimitExceededException.class)
+    public ModelAndView handleRateLimitExceededException(RateLimitExceededException ex, HttpServletResponse response) {
+        logger.error("Error: {}", ex.getMessage());
+        return createErrorModelAndView(response, HttpStatus.INTERNAL_SERVER_ERROR, "limit",
+                "Slow Down, Please!", ex.getMessage());
+    }
+
     @ExceptionHandler(RuntimeException.class)
     public ModelAndView handleRuntimeException(RuntimeException ex, HttpServletResponse response) {
-        logger.debug("Error: {}", ex.getMessage());
+        logger.error("Error: {}", ex.getMessage());
         return createErrorModelAndView(response, HttpStatus.INTERNAL_SERVER_ERROR, "unexpected-error",
                 "It looks like we’ve hit a storm in the code!", "Runtime exception detected—let’s clear the skies and try again.");
+    }
+
+    @ExceptionHandler(Exception.class)
+    public ModelAndView handleUnknownException(Exception ex, HttpServletResponse response) {
+        logger.error("Unknown error occurred: {}", ex.getMessage());
+        return createErrorModelAndView(response, HttpStatus.INTERNAL_SERVER_ERROR, "unknown-error",
+                "Uh-oh! Something unexpected happened.",
+                "Ramyr is working hard to resolve the issue. Please try again later.");
     }
 
     /**
