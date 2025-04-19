@@ -20,23 +20,23 @@
 
     <!-- ICON FOR BROWSER TAB -->
     <!-- STATIC -->
-    <link rel="icon" href="../static/img/other/favicon.png" />
+    <!-- <link rel="icon" href="../static/img/other/favicon.png" />
     <link
       rel="apple-touch-icon"
       href="../static/img/other/apple-touch-icon.png"
     />
-    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="manifest" href="manifest.webmanifest" /> -->
 
     <!-- THYMELEAF -->
     <link rel="icon" th:href="@{/img/other/favicon.png}" />
     <link rel="apple-touch-icon" th:href="@{/img/other/apple-touch-icon.png}" />
-    <link rel="manifest" th:href="manifest.webmanifest" />
+    <link rel="manifest" th:href="@{/manifest.webmanifest}" />
 
     <!-- CSS -->
     <!-- STATIC -->
-    <link rel="stylesheet" href="../static/css/general.css" />
+    <!-- <link rel="stylesheet" href="../static/css/general.css" />
     <link rel="stylesheet" href="../static/css/style.css" />
-    <link rel="stylesheet" href="../static/css/queries.css" />
+    <link rel="stylesheet" href="../static/css/queries.css" /> -->
 
     <!-- THYMELEAF -->
     <link rel="stylesheet" th:href="@{/css/general.css}" />
@@ -46,7 +46,7 @@
 
     <!-- JAVASCRIPT -->
     <!-- STATIC -->
-    <script defer src="../static/js/forecast-scrolling.js"></script>
+    <!-- <script defer src="../static/js/forecast-scrolling.js"></script> -->
     <!-- THYMELEAF -->
     <script defer th:src="@{/js/forecast-scrolling.js}"></script>
 
@@ -69,6 +69,7 @@
           <header class="weather-app-header">
             <div class="weather-app-introduction">
               <a
+                class="disp-flex"
                 href="https://ramyrgarceniego.netlify.app/"
                 target="_self"
                 aria-label="Link to Ramyr's CV Website"
@@ -101,6 +102,7 @@
                   id="city"
                   placeholder="Entery City"
                   required
+                  autocomplete="off"
                 />
                 <button type="submit" class="search-symbol">
                   <img
@@ -192,175 +194,248 @@
               </ul>
             </nav>
           </header>
-          <!-- SECTION WEATHER -->
-          <section class="section-weather">
-            <div class="weather-data">
-              <div class="weather-temp-container">
-                <p class="weather-temp temp-font">
-                  <span th:text="${currentWeather.temperature}">31</span
-                  ><span>&deg;</span
-                  ><span th:text="${units == 'metric' ? 'C' : 'F'}">C</span>
-                </p>
 
-                <img
-                  class="weather-description-icon"
-                  src="../static/img/weather-icons/02d.svg"
-                  th:src="@{/img/weather-icons/{weatherIcon}.svg(weatherIcon=${currentWeather.weatherIcon})}"
-                  alt="Weather icon corresponding to the weather description"
-                />
-              </div>
-
-              <div
-                class="weather-data-container weather-data-style weather-data-font-inter"
-              >
-                <p th:text="${currentWeather.weatherDescription}">few clouds</p>
-
-                <div class="weather-data-align">
-                  <p>
-                    <span th:text="${currentWeather.cityName}">Pasay City</span
-                    ><span>,</span>
-                    <span th:text="${currentWeather.country}">PH</span>
-                  </p>
-                  <img
-                    class="weather-data-icon"
-                    src="../static/img/weather-data-img/map-pin.svg"
-                    th:src="@{/img/weather-data-img/map-pin.svg}"
-                    alt="Location icon"
-                  />
-                </div>
-
-                <p
-                  class="remove-text-transform"
-                  th:text="${currentWeather.formattedDateTime}"
-                >
-                  11 Apr 2025, 01:34 PM
-                </p>
-              </div>
-
-              <div
-                class="misc-weather-data weather-data-style weather-data-font-nunito"
-              >
-                <div class="weather-data-align">
-                  <img
-                    class="weather-data-icon"
-                    src="../static/img/weather-data-img/temperature-feels.svg"
-                    th:src="@{/img/weather-data-img/temperature-feels.svg}"
-                    alt="Feels like temperature icon"
-                  />
-                  <p>
-                    <span class="margin-right-text">Feels like:</span>
-                    <span th:text="${currentWeather.tempFeelsLike}">36</span
+          <section class="weather-data-section">
+            <section class="section-weather">
+              <div class="weather-data">
+                <div class="weather-temp-container">
+                  <p class="weather-temp temp-font">
+                    <span th:text="${currentWeather.temperature}">31</span
                     ><span>&deg;</span
                     ><span th:text="${units == 'metric' ? 'C' : 'F'}">C</span>
                   </p>
-                </div>
 
-                <div class="weather-data-align">
                   <img
-                    class="weather-data-icon"
-                    src="../static/img/weather-data-img/humidity.svg"
-                    th:src="@{/img/weather-data-img/humidity.svg}"
-                    alt="Humidity icon"
+                    class="weather-description-icon"
+                    src="../static/img/weather-icons/02d.svg"
+                    th:src="@{/img/weather-icons/{weatherIcon}.svg(weatherIcon=${currentWeather.weatherIcon})}"
+                    alt="Weather icon corresponding to the weather description"
                   />
-                  <p>
-                    <span class="margin-right-text">Humidity:</span>
-                    <span th:text="${currentWeather.humidity}">58</span
-                    ><span>&percnt;</span>
-                  </p>
-                </div>
 
-                <div class="weather-data-align">
-                  <img
-                    class="weather-data-icon"
-                    src="../static/img/weather-data-img/wind.svg"
-                    th:src="@{/img/weather-data-img/wind.svg}"
-                    alt="Wind speed icon"
-                  />
-                  <p>
-                    <span class="margin-right-text">Wind speed:</span>
-                    <span th:text="${currentWeather.windSpeed}">24</span>
-                    <span
-                      class="small-letter"
-                      th:text="${units == 'metric' ? 'm/s' : 'mph'}"
-                      >m/s</span
+                  <div
+                    class="weather-data-container weather-data-style weather-data-font-inter"
+                  >
+                    <p th:text="${currentWeather.weatherDescription}">
+                      few clouds
+                    </p>
+
+                    <div class="weather-data-align">
+                      <p>
+                        <span th:text="${currentWeather.cityName}"
+                          >Pasay City</span
+                        ><span>,</span>
+                        <span th:text="${currentWeather.country}">PH</span>
+                      </p>
+                      <img
+                        class="weather-data-icon"
+                        src="../static/img/weather-data-img/map-pin.svg"
+                        th:src="@{/img/weather-data-img/map-pin.svg}"
+                        alt="Location icon"
+                      />
+                    </div>
+
+                    <p
+                      class="remove-text-transform"
+                      th:text="${currentWeather.formattedDateTime}"
                     >
-                  </p>
+                      11 Apr 2025, 01:34 pm
+                    </p>
+                  </div>
                 </div>
+
+                <aside
+                  class="misc-weather-data weather-data-style weather-data-font-nunito"
+                >
+                  <!--SUNRISE, SUNSET, HUMIDITY -->
+                  <div class="misc-data-container">
+                    <!-- SUNRISE -->
+                    <div class="weather-data-align">
+                      <img
+                        class="weather-data-icon"
+                        src="../static/img/weather-data-img/sunrise.svg"
+                        th:src="@{/img/weather-data-img/sunrise.svg}"
+                        alt="Sunrise time of the day"
+                      />
+                      <p>
+                        <span>Sunrise:</span>
+                        <span
+                          class="remove-text-transform"
+                          th:text="${currentWeather.sunrise}"
+                          >06:40 am</span
+                        >
+                      </p>
+                    </div>
+                    <!-- SUNSET -->
+                    <div class="weather-data-align">
+                      <img
+                        class="weather-data-icon"
+                        src="../static/img/weather-data-img/sunset.svg"
+                        th:src="@{/img/weather-data-img/sunset.svg}"
+                        alt="Sunset time of the day"
+                      />
+                      <p>
+                        <span>Sunset:</span>
+                        <span
+                          class="remove-text-transform"
+                          th:text="${currentWeather.sunset}"
+                          >06:10 pm</span
+                        >
+                      </p>
+                    </div>
+                    <!-- HUMIDITY -->
+                    <div class="weather-data-align">
+                      <img
+                        class="weather-data-icon"
+                        src="../static/img/weather-data-img/humidity.svg"
+                        th:src="@{/img/weather-data-img/humidity.svg}"
+                        alt="Humidity icon"
+                      />
+                      <p>
+                        <span class="margin-right-text">Humidity:</span>
+                        <span th:text="${currentWeather.humidity}">58</span
+                        ><span>&percnt;</span>
+                      </p>
+                    </div>
+                  </div>
+
+                  <!-- FEELS LIKE, HIGH/LOW TEMP, WIND SPEED -->
+                  <div class="misc-data-container">
+                    <!-- FEELS LIKE TEMPERATURE -->
+                    <div class="weather-data-align">
+                      <img
+                        class="weather-data-icon"
+                        src="../static/img/weather-data-img/temperature-feels.svg"
+                        th:src="@{/img/weather-data-img/temperature-feels.svg}"
+                        alt="Feels like temperature icon"
+                      />
+                      <p>
+                        <span class="margin-right-text">Feels like:</span>
+                        <span th:text="${currentWeather.tempFeelsLike}">36</span
+                        ><span>&deg;</span
+                        ><span th:text="${units == 'metric' ? 'C' : 'F'}"
+                          >C</span
+                        >
+                      </p>
+                    </div>
+                    <!-- HIGH TEMPERATURE -->
+                    <div class="weather-data-align">
+                      <img
+                        class="weather-data-icon"
+                        src="../static/img/weather-data-img/temperature-list.svg"
+                        th:src="@{/img/weather-data-img/temperature-list.svg}"
+                        alt="High temperature icon"
+                      />
+                      <p>
+                        <span class="margin-right-text">High / Low:</span>
+                        <span th:text="${currentWeather.maxTemp}">36</span
+                        ><span>&deg;</span
+                        ><span th:text="${units == 'metric' ? 'C' : 'F'}"
+                          >C</span
+                        >
+                        <span>/</span>
+                        <span th:text="${currentWeather.minTemp}">28</span
+                        ><span>&deg;</span
+                        ><span th:text="${units == 'metric' ? 'C' : 'F'}"
+                          >C</span
+                        >
+                      </p>
+                    </div>
+                    <!-- WINDSPEED -->
+                    <div class="weather-data-align">
+                      <img
+                        class="weather-data-icon"
+                        src="../static/img/weather-data-img/wind.svg"
+                        th:src="@{/img/weather-data-img/wind.svg}"
+                        alt="Wind speed icon"
+                      />
+                      <p>
+                        <span class="margin-right-text">Wind speed:</span>
+                        <span th:text="${currentWeather.windSpeed}">24</span>
+                        <span
+                          class="small-letter"
+                          th:text="${units == 'metric' ? 'm/s' : 'mph'}"
+                          >m/s</span
+                        >
+                      </p>
+                    </div>
+                  </div>
+                </aside>
               </div>
-            </div>
-          </section>
+            </section>
 
-          <!-- SECTION FORECAST -->
-          <section class="section-forecast">
-            <!-- FORECAST FARD CONTAINER -->
-            <div class="forecast-cards">
-              <!-- FORECAST CARDS -->
-              <div
-                class="forecast-card weather-data-style weather-data-font-inter"
-                th:each="forecast : ${weatherForecast}"
-              >
-                <div class="forecast-weather">
-                  <p
-                    class="forecast-date"
-                    th:text="${forecast.formattedDateTime}"
-                  >
-                    11 Apr 2025, 03:34 pm
-                  </p>
-                  <p
-                    class="forecast-weather-description margin-bottom-xsm"
-                    th:text="${forecast.weatherDescription}"
-                  >
-                    Shower Rain
-                  </p>
-                  <div class="forecast-display">
-                    <img
-                      class="forecast-img"
-                      src="../static/img/weather-icons/09d.svg"
-                      th:src="@{/img/weather-icons/{weatherIcon}.svg(weatherIcon=${forecast.weatherIcon})}"
-                      alt="Shower rain icon - day"
-                    />
+            <!-- SECTION FORECAST -->
+            <section class="section-forecast">
+              <!-- FORECAST FARD CONTAINER -->
+              <div class="forecast-cards">
+                <!-- FORECAST CARDS -->
+                <div
+                  class="forecast-card weather-data-style weather-data-font-inter"
+                  th:each="forecast : ${weatherForecast}"
+                >
+                  <div class="forecast-weather">
+                    <p
+                      class="forecast-date"
+                      th:text="${forecast.formattedDateTime}"
+                    >
+                      11 Apr 2025, 03:34 pm
+                    </p>
+                    <p
+                      class="forecast-weather-description margin-bottom-xsm"
+                      th:text="${forecast.weatherDescription}"
+                    >
+                      Shower Rain
+                    </p>
+                    <div class="forecast-display">
+                      <img
+                        class="forecast-img"
+                        src="../static/img/weather-icons/09d.svg"
+                        th:src="@{/img/weather-icons/{weatherIcon}.svg(weatherIcon=${forecast.weatherIcon})}"
+                        alt="Shower rain icon - day"
+                      />
 
-                    <div>
-                      <div
-                        class="disp-flex disp-flex--align-center disp-flex--gap-sm margin-bottom-xsm"
-                      >
-                        <img
-                          class="forecast-temp-img"
-                          src="../static/img/weather-data-img/temperature-list.svg"
-                          th:src="@{/img/weather-data-img/temperature-list.svg}"
-                          alt="Temperature icon"
-                        />
-                        <p class="forecast-data-style">
-                          <span th:text="${forecast.temperature}">33</span
-                          ><span>&deg;</span
-                          ><span th:text="${units == 'metric' ? 'C' : 'F'}"
-                            >C</span
-                          >
-                        </p>
-                      </div>
-                      <div
-                        class="disp-flex disp-flex--align-center disp-flex--gap-sm"
-                      >
-                        <img
-                          class="forecast-temp-img"
-                          src="../static/img/weather-data-img/temperature-feels.svg"
-                          th:src="@{/img/weather-data-img/temperature-feels.svg}"
-                          alt="Feels like temperature icon"
-                        />
-                        <p class="forecast-data-style">
-                          <span th:text="${forecast.tempFeelsLike}">36</span
-                          ><span>&deg;</span
-                          ><span th:text="${units == 'metric' ? 'C' : 'F'}"
-                            >C</span
-                          >
-                        </p>
+                      <div>
+                        <div
+                          class="disp-flex disp-flex--align-center disp-flex--gap-sm margin-bottom-xsm"
+                        >
+                          <img
+                            class="forecast-temp-img"
+                            src="../static/img/weather-data-img/temperature-list.svg"
+                            th:src="@{/img/weather-data-img/temperature-list.svg}"
+                            alt="Temperature icon"
+                          />
+                          <p class="forecast-data-style">
+                            <span th:text="${forecast.temperature}">33</span
+                            ><span>&deg;</span
+                            ><span th:text="${units == 'metric' ? 'C' : 'F'}"
+                              >C</span
+                            >
+                          </p>
+                        </div>
+                        <div
+                          class="disp-flex disp-flex--align-center disp-flex--gap-sm"
+                        >
+                          <img
+                            class="forecast-temp-img"
+                            src="../static/img/weather-data-img/temperature-feels.svg"
+                            th:src="@{/img/weather-data-img/temperature-feels.svg}"
+                            alt="Feels like temperature icon"
+                          />
+                          <p class="forecast-data-style">
+                            <span th:text="${forecast.tempFeelsLike}">36</span
+                            ><span>&deg;</span
+                            ><span th:text="${units == 'metric' ? 'C' : 'F'}"
+                              >C</span
+                            >
+                          </p>
+                        </div>
                       </div>
                     </div>
                   </div>
                 </div>
               </div>
-            </div>
+            </section>
           </section>
+          <!-- SECTION WEATHER -->
         </div>
       </div>
     </main>

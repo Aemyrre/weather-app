@@ -1,6 +1,290 @@
 /***********************/
-/* BELOW 1360px */
+/* BELOW 1040px */
 /***********************/
 
-@medi (min-width: ) {
+@media (max-width: 65em) {
+  html {
+    /* 9px / 16px */
+    font-size: 56.25%;
+  }
+
+  .weather-description-icon {
+    height: 14rem;
+    width: 14rem;
+  }
 }
+
+/***********************/
+/* BELOW 928px  */
+/***********************/
+
+@media (max-width: 58em) {
+  html {
+    /* 7px / 16px */
+    font-size: 43.75%;
+  }
+}
+
+/***********************/
+/* BELOW 720px */
+/***********************/
+
+@media (max-width: 45em) {
+  .weather-data-section {
+    grid-template-columns: 1fr;
+    grid-template-rows: auto 1fr;
+
+    gap: 6.4rem;
+  }
+
+  .section-weather {
+    grid-row: 1/2;
+  }
+
+  .weather-description-icon {
+    grid-column: 1/-1;
+    justify-self: center;
+
+    height: 20rem;
+    width: 20rem;
+  }
+
+  .weather-data {
+    row-gap: 3.2rem;
+  }
+
+  .weather-temp-container {
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: auto auto;
+  }
+
+  .weather-temp {
+    grid-column: 1/2;
+    grid-row: 2/-1;
+    font-size: 7.4rem;
+  }
+
+  .weather-data-container {
+    grid-column: 2/-1;
+  }
+
+  .section-forecast {
+    grid-column: 1/-1;
+    grid-row: 2/-1;
+
+    width: 100%;
+  }
+
+  .forecast-cards {
+    /* height: auto; */
+    overflow-y: auto;
+
+    scroll-snap-align: none;
+    scroll-snap-type: none;
+
+    padding: 0;
+
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 5%;
+    row-gap: 5%;
+  }
+
+  .forecast-img {
+    height: 8rem;
+    width: 8rem;
+  }
+}
+
+/***********************/
+/* BELOW 544px */
+/***********************/
+
+@media (max-width: 34em) {
+  .weather-app-header {
+    grid-template-columns: auto auto;
+    grid-template-rows: 1fr 1fr;
+    row-gap: 1.6rem;
+  }
+
+  .weather-app-introduction {
+    grid-column: 1/2;
+    grid-row: 1/2;
+  }
+
+  .weather-search-container {
+    grid-column: 1/-1;
+    grid-row: 2/-1;
+  }
+
+  .weather-nav {
+    grid-column: 2/-1;
+    grid-row: 1/2;
+  }
+}
+
+/***********************/
+/* BELOW 480px */
+/***********************/
+
+@media (max-width: 30em) {
+  .container {
+    padding: 0 1.6rem;
+  }
+
+  .heading-primary {
+    font-size: 2rem;
+  }
+
+  .weather-app-introduction {
+    gap: 0.8rem;
+  }
+
+  .nav-link-img {
+    height: 2.4rem;
+    width: 2.4rem;
+  }
+
+  .weather-nav {
+    justify-self: end;
+  }
+
+  .weather-search-container {
+    gap: 1.6rem;
+  }
+
+  .weather-data-section,
+  .weather-data {
+    gap: 4.8rem;
+  }
+
+  .weather-temp-container {
+    grid-template-columns: 1fr 1fr;
+    gap: 4rem;
+  }
+
+  .weather-description-icon {
+    justify-self: start;
+    grid-column: 2/-1;
+    grid-row: 1/2;
+
+    height: 11rem;
+    width: 11rem;
+  }
+
+  .weather-temp {
+    justify-self: end;
+    grid-column: 1/2;
+    grid-row: 1/2;
+
+    font-size: 5.2rem;
+  }
+
+  .weather-data-container {
+    justify-self: center;
+    align-items: center;
+    grid-column: 1/-1;
+    grid-row: 2/-1;
+  }
+
+  .misc-weather-data {
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+    gap: 2.4rem;
+  }
+
+  .misc-data-container {
+    align-self: center;
+    align-items: center;
+  }
+
+  .forecast-cards {
+    grid-template-columns: 1fr;
+
+    gap: 2.4rem;
+  }
+
+  /* SPLASH PAGE */
+  .text-wrapper span {
+    font-size: calc(2.5vw);
+    gap: 0.8rem;
+  }
+
+  .locator-img {
+    height: 13rem;
+    width: 13rem;
+  }
+
+  /* ERROR PAGE */
+
+  .error-text {
+    font-size: 2.4rem;
+  }
+
+  .error-home-btn,
+  .error-home-btn:link,
+  .error-home-btn:active {
+    font-size: 1.6rem;
+    padding: 8px 16px;
+    border-radius: 9px;
+  }
+}
+
+/* 
+--- 01 Typography System
+
+    - Font Syze System (px)
+        10 / 12 / 14 / 16 / 18 / 20 / 24 / 30 / 36 / 44 / 52 / 62 / 74 / 86 / 98
+
+    - Font Weights: 
+        Default: 400
+        Medium: 500
+        Semi-bold: 600
+        Bold: 700
+
+    - Line Heights:
+        Default: 1
+        Small: 1.05
+        Medium: 1.2
+        Paragraph default: 1.6
+        Large: 1.8
+
+    - Letter Spacing:
+        0.5px
+        0.75px
+
+    --- 02 Colours
+
+    - Primary: #a5a58d rgb(165, 165, 141) (Call-to-action BG and Button Colours)
+      #D5D3DF (Titan White)
+      #f1e7df (Dawn White)
+      #FAF9F6 (Off-White)
+    - Secondary: #d1e0e5
+    - Tints:
+        #edede8
+        #dbdbd1
+        
+    - Shades: 
+        #898e7c
+        
+        
+    - Greys: 
+        #555
+
+        - Illustration:
+        
+        - Others:
+    --- 05 Shadows
+
+    --- 06 Border Radius
+        Default: 9px
+        Medium: 11px
+
+
+    --- 07 Whitespace
+    
+    - SPACING SYSTEM (px)
+        2 / 4 / 8 / 12 / 16 / 24 / 32 / 48 / 64 / 80 / 96 / 128
+
+*/
