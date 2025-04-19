@@ -13,6 +13,11 @@ body {
   gap: 4.8rem;
 }
 
+.locator-img {
+  height: 20rem;
+  width: 20rem;
+}
+
 .text-wrapper {
   height: fit-content;
   display: flex;
