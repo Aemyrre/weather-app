@@ -76,6 +76,10 @@ Enter the name of a city in the search box to retrieve weather information.
 ### Server-Side Rendering
 
 1. Using `ssr` branch and `http://localhost:8080`
+<div align="center">
+<!-- ![Screenshot 2025-04-19 195143](https://github.com/user-attachments/assets/85dda674-9c55-4515-b6bf-00d2c669a111) -->
+   <img src="https://github.com/user-attachments/assets/85dda674-9c55-4515-b6bf-00d2c669a111" alt="Weather API frontend screenshot"/>
+</div>
 
 ## License
 
