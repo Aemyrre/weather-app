@@ -18,6 +18,7 @@ import org.springframework.web.client.RestTemplate;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import toyprojects.weatherapp.entity.WeatherData;
 import toyprojects.weatherapp.entity.WeatherDataDTO;
 import toyprojects.weatherapp.exception.CityNotFoundException;
@@ -27,8 +28,8 @@ import toyprojects.weatherapp.validation.WeatherParameterValidation;
 @Service
 public class WeatherServiceImpl implements WeatherService {
 
-    @Value("${weather.api.key}")
-    private String apiKey;
+    private static final Dotenv dotenv = Dotenv.configure().ignoreIfMissing().load();
+    private static final String API_KEY = dotenv.get("API_KEY", System.getenv("API_KEY"));
 
     @Value("${openweathermap.api.baseurl}")
     private String weatherURL;
@@ -67,7 +68,7 @@ public class WeatherServiceImpl implements WeatherService {
         lang = validator.validateLanguage(lang);
 
         logger.info("Fetching current weather forecast for city: {}", city);
-        String url = String.format("%s?q=%s&appid=%s&units=%s&lang=%s", weatherURL, city, apiKey, units, lang);
+        String url = String.format("%s?q=%s&appid=%s&units=%s&lang=%s", weatherURL, city, API_KEY, units, lang);
 
         return fetchCurrentWeatherData(url);
     }
@@ -91,7 +92,7 @@ public class WeatherServiceImpl implements WeatherService {
         lang = validator.validateLanguage(lang);
 
         logger.info("Fetching current weather data for coordinates: lat={}, lon={}", lat, lon);
-        String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", weatherURL, lat, lon, apiKey, units, lang);
+        String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", weatherURL, lat, lon, API_KEY, units, lang);
 
         return fetchCurrentWeatherData(url);
     }
@@ -156,7 +157,7 @@ public class WeatherServiceImpl implements WeatherService {
         lang = validator.validateLanguage(lang);
 
         logger.info("Fetching weather forecast for city: {}", city);
-        String url = String.format("%s?q=%s&appid=%s&units=%s&lang=%s", forecastURL, city, apiKey, units, lang);
+        String url = String.format("%s?q=%s&appid=%s&units=%s&lang=%s", forecastURL, city, API_KEY, units, lang);
 
         return fetchForecastWeatherData(url);
     }
@@ -180,7 +181,7 @@ public class WeatherServiceImpl implements WeatherService {
         lang = validator.validateLanguage(lang);
 
         logger.info("Fetching weather data for coordinates: lat={}, lon={}", lat, lon);
-        String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", forecastURL, lat, lon, apiKey, units, lang);
+        String url = String.format("%s?lat=%s&lon=%s9&appid=%s&units=%s&lang=%s", forecastURL, lat, lon, API_KEY, units, lang);
 
         return fetchForecastWeatherData(url);
     }

@@ -5,6 +5,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertTrue;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,6 +23,7 @@ import org.springframework.web.servlet.ModelAndView;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import toyprojects.weatherapp.controller.WeatherController;
 import toyprojects.weatherapp.entity.WeatherDataDTO;
 import toyprojects.weatherapp.service.WeatherService;
@@ -37,9 +39,16 @@ public class WeatherControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    private final ObjectMapper objectMapper = new ObjectMapper();
+    private static final Dotenv dotenv = Dotenv.configure().directory(System.getProperty("user.dir")).load();
+
+    private static final ObjectMapper objectMapper = new ObjectMapper();
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherController.class);
+
+    @BeforeAll
+    public static void setUp() {
+        System.setProperty("API_KEY", dotenv.get("API_KEY"));
+    }
 
     @Test
     void contextLoads() {

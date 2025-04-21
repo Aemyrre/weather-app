@@ -5,6 +5,7 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
 import static org.junit.jupiter.api.Assertions.assertThrows;
+import org.junit.jupiter.api.BeforeAll;
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.annotation.DirtiesContext;
 
+import io.github.cdimascio.dotenv.Dotenv;
 import toyprojects.weatherapp.entity.WeatherDataDTO;
 import toyprojects.weatherapp.exception.CityNotFoundException;
 import toyprojects.weatherapp.service.WeatherServiceImpl;
@@ -23,7 +25,14 @@ public class WeatherServiceIntegrationTest {
     @Autowired
     private WeatherServiceImpl weatherService;
 
+    private static final Dotenv dotenv = Dotenv.configure().directory(System.getProperty("user.dir")).load();
+
     private static final Logger logger = LoggerFactory.getLogger(WeatherServiceIntegrationTest.class);
+
+    @BeforeAll
+    public static void setUp() {
+        System.setProperty("API_KEY", dotenv.get("API_KEY"));
+    }
 
     @Test
     void contextLoads() {
