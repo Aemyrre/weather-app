@@ -164,8 +164,8 @@
   }
 
   .weather-description-icon {
-    justify-self: start;
-    grid-column: 2/-1;
+    justify-self: end;
+    grid-column: 1/2;
     grid-row: 1/2;
 
     height: 11rem;
@@ -173,8 +173,8 @@
   }
 
   .weather-temp {
-    justify-self: end;
-    grid-column: 1/2;
+    justify-self: start;
+    grid-column: 2/-1;
     grid-row: 1/2;
 
     font-size: 5.2rem;
