@@ -56,7 +56,15 @@ public class WeatherData {
         ZonedDateTime dateTime = instant.atZone(ZoneOffset.ofTotalSeconds(timeZone));
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a");
 
-        return String.format("%s", dateTime.format(formatter));
+        return dateTime.format(formatter);
+    }
+
+    private String convertSunsetSunriseTime(Long unixTime, Integer timeZone) {
+        Instant instant = Instant.ofEpochSecond(unixTime);
+        ZonedDateTime dateTime = instant.atZone(ZoneOffset.ofTotalSeconds(timeZone));
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("hh:mm a");
+
+        return dateTime.format(formatter);
     }
 
     public String getCityName() {
@@ -64,6 +72,9 @@ public class WeatherData {
     }
 
     public void setCityName(String cityName) {
+        if (cityName == null || cityName.length() > 100) {
+            throw new IllegalArgumentException("Invalid city name");
+        }
         this.cityName = cityName;
     }
 
@@ -175,7 +186,7 @@ public class WeatherData {
         if (sunrise == null) {
             this.sunrise = null;
         } else {
-            this.sunrise = convertUnixToDateTime(sunrise, timezone).substring(13);
+            this.sunrise = convertSunsetSunriseTime(sunrise, timezone);
         }
     }
 
@@ -187,7 +198,7 @@ public class WeatherData {
         if (sunset == null) {
             this.sunset = null;
         } else {
-            this.sunset = convertUnixToDateTime(sunset, timezone).substring(13);
+            this.sunset = convertSunsetSunriseTime(sunset, timezone);
         }
     }
 

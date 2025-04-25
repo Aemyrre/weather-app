@@ -4,46 +4,75 @@ import java.util.Objects;
 
 public class WeatherDataDTO {
 
-    private String cityName;
-    private String country;
+    private final String cityName;
+    private final String country;
 
-    private int weatherId;
-    private String weatherMainDescription;
-    private String weatherDescription;
-    private String weatherIcon;
+    private final int weatherId;
+    private final String weatherMainDescription;
+    private final String weatherDescription;
+    private final String weatherIcon;
 
-    private int temperature;
-    private int tempFeelsLike;
-    private int minTemp;
-    private int maxTemp;
-    private int humidity;
+    private final int temperature;
+    private final int tempFeelsLike;
+    private final int minTemp;
+    private final int maxTemp;
+    private final int humidity;
 
-    private int windSpeed;
+    private final int windSpeed;
 
-    private String sunrise;
-    private String sunset;
+    private final String sunrise;
+    private final String sunset;
 
-    private String formattedDateTime;
+    private final String formattedDateTime;
 
-    public WeatherDataDTO() {
-    }
+    private static final String UNKNOWN = "unknown";
 
     public WeatherDataDTO(WeatherData source) {
-        this.cityName = source.getCityName();
-        this.country = source.getCountry();
+        this.cityName = source.getCityName() != null
+                ? source.getCityName()
+                : UNKNOWN;
+
+        this.country = source.getCountry() != null
+                ? source.getCountry()
+                : UNKNOWN;
+
         this.weatherId = source.getWeatherId();
-        this.weatherMainDescription = source.getWeatherMainDescription();
-        this.weatherDescription = source.getWeatherDescription();
-        this.weatherIcon = source.getWeatherIcon();
+
+        this.weatherMainDescription = source.getWeatherMainDescription() != null
+                ? source.getWeatherMainDescription()
+                : UNKNOWN;
+
+        this.weatherDescription = source.getWeatherDescription() != null
+                ? source.getWeatherDescription()
+                : UNKNOWN;
+
+        this.weatherIcon = source.getWeatherIcon() != null
+                ? source.getWeatherIcon()
+                : UNKNOWN;
+
         this.temperature = source.getTemperature();
+
         this.tempFeelsLike = source.getTempFeelsLike();
+
         this.minTemp = source.getMinTemp();
+
         this.maxTemp = source.getMaxTemp();
+
         this.humidity = source.getHumidity();
+
         this.windSpeed = source.getWindSpeed();
-        this.formattedDateTime = source.getFormattedDateTime();
-        this.sunrise = source.getSunrise();
-        this.sunset = source.getSunset();
+
+        this.formattedDateTime = source.getFormattedDateTime() != null
+                ? source.getFormattedDateTime()
+                : UNKNOWN;
+
+        this.sunrise = source.getSunrise() != null
+                ? source.getSunrise()
+                : UNKNOWN;
+
+        this.sunset = source.getSunset() != null
+                ? source.getSunset()
+                : UNKNOWN;
     }
 
     public String getCityName() {
@@ -115,12 +144,12 @@ public class WeatherDataDTO {
             return false;
         }
         WeatherDataDTO weatherDataDTO = (WeatherDataDTO) o;
-        return Objects.equals(cityName, weatherDataDTO.cityName) && Objects.equals(country, weatherDataDTO.country) && weatherId == weatherDataDTO.weatherId && Objects.equals(weatherMainDescription, weatherDataDTO.weatherMainDescription) && Objects.equals(weatherDescription, weatherDataDTO.weatherDescription) && Objects.equals(weatherIcon, weatherDataDTO.weatherIcon) && temperature == weatherDataDTO.temperature && tempFeelsLike == weatherDataDTO.tempFeelsLike && minTemp == weatherDataDTO.minTemp && maxTemp == weatherDataDTO.maxTemp && humidity == weatherDataDTO.humidity && windSpeed == weatherDataDTO.windSpeed && Objects.equals(sunrise, weatherDataDTO.sunrise) && Objects.equals(sunset, weatherDataDTO.sunset) && Objects.equals(formattedDateTime, weatherDataDTO.formattedDateTime);
+        return Objects.equals(cityName, weatherDataDTO.cityName) && Objects.equals(country, weatherDataDTO.country);
     }
 
     @Override
     public int hashCode() {
-        return Objects.hash(cityName, country, weatherId, weatherMainDescription, weatherDescription, weatherIcon, temperature, tempFeelsLike, minTemp, maxTemp, humidity, windSpeed, sunrise, sunset, formattedDateTime);
+        return Objects.hash(cityName, country);
     }
 
     @Override
