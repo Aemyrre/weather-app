@@ -1,5 +1,8 @@
 package toyprojects.weatherapp.controller;
 
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DateTimeParseException;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -115,15 +118,20 @@ public class WeatherController {
      * @return "day" or "night"
      */
     private String generateTimeOfDay(String time) {
-        int hours = Integer.parseInt(time.substring(13, 15));
+        try {
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd MMM yyyy, hh:mm a");
+            LocalTime localTime = LocalTime.parse(time, formatter);
 
-        logger.debug("Time of day to parse: {}, hours: {}", time, hours);
-        if (time.contains("am") && hours > 6 && hours != 12
-                || time.contains("pm") && hours < 6
-                || time.contains("pm") && hours == 12) {
+            logger.debug("Parsed time: {}, hours: {}", localTime, localTime.getHour());
+
+            int hours = localTime.getHour();
+            if (hours >= 6 && hours < 18) {
+                return "day";
+            }
+            return "night";
+        } catch (DateTimeParseException ex) {
+            logger.error("Error parsing time: {}", time, ex);
             return "day";
         }
-
-        return "night";
     }
 }
