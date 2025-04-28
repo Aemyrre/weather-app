@@ -95,7 +95,11 @@ public class WeatherServiceImpl implements WeatherService {
             return getCurrentWeatherDataByCoordinates(lat, lon, units, lang);
         }
 
-        logger.info("Weather retrieved from API. lat={}, lon={}", lat, lon);
+        logger.info("Weather retrieved from cache. lat={}, lon={}", lat, lon);
+
+        logger.info("Rate limiting applied only for API requests, not cached data.");
+        logger.info("Client IP: {}", clientIp);
+        logger.info("Remaining rate limit: {}", bucket.getAvailableTokens());
         return cachedWeatherDataDTO;
     }
 
