@@ -6,6 +6,10 @@ import toyprojects.weatherapp.entity.WeatherDataDTO;
 
 public interface WeatherService {
 
+    WeatherDataDTO getWeatherDataByCityWithRateLimit(String clientIp, String city, String units, String lang);
+
+    WeatherDataDTO getWeatherDataByCoordinatesWithRateLimit(String clientIp, double lat, double lon, String units, String lang);
+
     WeatherDataDTO getCurrentWeatherDataByCity(String city, String units, String lang);
 
     WeatherDataDTO getCurrentWeatherDataByCoordinates(double lat, double lon, String units, String lang);

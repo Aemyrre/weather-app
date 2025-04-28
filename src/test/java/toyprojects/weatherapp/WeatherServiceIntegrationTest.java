@@ -29,6 +29,8 @@ public class WeatherServiceIntegrationTest {
 
     private static final Logger logger = LoggerFactory.getLogger(WeatherServiceIntegrationTest.class);
 
+    private final String clientIp = "127.0.0.1";
+
     @BeforeAll
     public static void setUp() {
         System.setProperty("API_KEY", dotenv.get("API_KEY"));
@@ -307,6 +309,146 @@ public class WeatherServiceIntegrationTest {
         assertNotNull(requestCity.get(0).getCityName());
         assertEquals(country, requestCity.get(0).getCountry());
         assertEquals(size, requestCity.size());
+    }
+
+    @Test
+    void getWeatherDataByCityWithRateLimit() {
+        String city = "Manila";
+        String country = "PH";
+
+        logger.info("Entering getWeatherDataByCityWithRateLimit with city: {}", city);
+        WeatherDataDTO requestCity = weatherService.getWeatherDataByCityWithRateLimit(clientIp, city, null, null);
+
+        assertEquals(city, requestCity.getCityName());
+        assertEquals(country, requestCity.getCountry());
+    }
+
+    @Test
+    void getWeatherDataByCityWithRateLimit_withCountryCode() {
+        String city = "Bangkok, TH";
+        String country = "TH";
+
+        logger.info("Entering getWeatherDataByCityWithRateLimit with city: {}", city);
+        WeatherDataDTO requestCity = weatherService.getWeatherDataByCityWithRateLimit(clientIp, city, null, null);
+
+        assertEquals("Bangkok", requestCity.getCityName());
+        assertEquals(country, requestCity.getCountry());
+    }
+
+    @Test
+    void getWeatherDataByCityWithRateLimit_usingDifferentLetterCase() {
+        String city = "mAnILa";
+        String country = "PH";
+
+        logger.info("Entering getWeatherDataByCityWithRateLimit with city: {}", city);
+        WeatherDataDTO requestCity = weatherService.getWeatherDataByCityWithRateLimit(clientIp, city, null, null);
+
+        assertEquals(city.toLowerCase(), requestCity.getCityName().toLowerCase());
+        assertEquals(country, requestCity.getCountry());
+    }
+
+    @Test
+    void getWeatherDataByCityWithRateLimit_invalidCity_shouldThrowException() {
+        String city = "";
+        String errorMessage = "We can't find the city!";
+
+        logger.info("Entering getWeatherDataByCityWithRateLimit with city to retrieve error message: {}", errorMessage);
+        CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getWeatherDataByCityWithRateLimit(clientIp, city, null, null));
+
+        assertEquals(errorMessage, ex.getMessage());
+    }
+
+    @Test
+    void getWeatherDataByCityWithRateLimit_nullCity_shouldThrowException() {
+
+        String errorMessage = "We can't find the city!";
+
+        logger.info("Entering getWeatherDataByCityWithRateLimit with city to retrieve error message: {}", errorMessage);
+        CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getWeatherDataByCityWithRateLimit(clientIp, null, null, null));
+
+        assertEquals(errorMessage, ex.getMessage());
+    }
+
+    @Test
+    void getWeatherDataByCityWithRateLimit_usingImperialSystem_AndInJapanes() {
+        String city = "Tokyo";
+        String units = "imperial";
+        String lang = "ja";
+
+        logger.info("Entering getWeatherDataByCityWithRateLimit with city: {}", city);
+        WeatherDataDTO requestCity = weatherService.getWeatherDataByCityWithRateLimit(clientIp, city, units, lang);
+
+        // Tokyo = 東京都
+        assertEquals("東京都", requestCity.getCityName());
+        assertEquals("JP", requestCity.getCountry());
+    }
+
+    @Test
+    void getWeatherDataByCityWithRateLimit_usingInvalidUnitsAndLang_shouldReturnMetricUnitsAndEnglishLanguage() {
+        String city = "Tokyo";
+        String units = "";
+        String lang = null;
+        String country = "JP";
+
+        logger.info("Entering getWeatherDataByCityWithRateLimit with city: {}", city);
+        WeatherDataDTO requestCity = weatherService.getWeatherDataByCityWithRateLimit(clientIp, city, units, lang);
+
+        assertEquals(city, requestCity.getCityName());
+        assertEquals(country, requestCity.getCountry());
+    }
+
+    @Test
+    void getCurrentWeatherDataByCoordinatesWithRateLimit() {
+        double lat = 14.537752;
+        double lon = 121.001381;
+        String country = "PH";
+
+        logger.info("Entering getCurrentWeatherDataByCoordinatesWithRateLimit with coordinates: lat={}, lon={}", lat, lon);
+        WeatherDataDTO requestCity = weatherService.getWeatherDataByCoordinatesWithRateLimit(clientIp, lat, lon, null, null);
+
+        assertNotNull(requestCity.getCityName());
+        assertEquals(country, requestCity.getCountry());
+    }
+
+    @Test
+    void getCurrentWeatherDataByCoordinatesWithRateLimit_invalidCity_shouldThrowException() {
+        double lat = -90.1;
+        double lon = 180.1;
+        String errorMessage = "We can't find the city!";
+
+        logger.info("Entering getCurrentWeatherDataByCoordinatesWithRateLimit with coordinates to retrieve error message: lat={}, lon={} message={}", lat, lon, errorMessage);
+        CityNotFoundException ex = assertThrows(CityNotFoundException.class, () -> weatherService.getWeatherDataByCoordinatesWithRateLimit(clientIp, lat, lon, null, null));
+
+        assertEquals(errorMessage, ex.getMessage());
+    }
+
+    @Test
+    void getCurrentWeatherDataByCoordinatesWithRateLimit_usingImperialSystem_AndInJapanese() {
+        double lat = 35.652832;
+        double lon = 139.839478;
+        String units = "imperial";
+        String lang = "ja";
+
+        logger.info("Entering getCurrentWeatherDataByCoordinatesWithRateLimit with coordinates: lat={}, lon={}", lat, lon);
+        WeatherDataDTO requestCity = weatherService.getWeatherDataByCoordinatesWithRateLimit(clientIp, lat, lon, units, lang);
+
+        assertNotNull(requestCity.getCityName());
+        assertEquals("JP", requestCity.getCountry());
+    }
+
+    @Test
+    void getCurrentWeatherDataByCoordinatesWithRateLimit_usingInvalidUnitsAndLang_shouldReturnMetricUnitsAndEnglishLanguage() {
+        double lat = 35.652832;
+        double lon = 139.839478;
+        String units = "";
+        String lang = null;
+        String country = "JP";
+
+        logger.info("Entering getCurrentWeatherDataByCoordinatesWithRateLimit with coordinates: lat={}, lon={}", lat, lon);
+        WeatherDataDTO requestCity = weatherService.getWeatherDataByCoordinatesWithRateLimit(clientIp, lat, lon, units, lang);
+
+        assertEquals("Urayasu", requestCity.getCityName());
+        assertEquals(country, requestCity.getCountry());
     }
 
 }

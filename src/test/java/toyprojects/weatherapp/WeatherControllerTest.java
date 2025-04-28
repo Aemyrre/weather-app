@@ -349,7 +349,7 @@ public class WeatherControllerTest {
     }
 
     @Test
-    void getWeatherByCoordinates_usingInvalidCoordinates_emptyInpu_part2() throws Exception {
+    void getWeatherByCoordinates_usingInvalidCoordinates_emptyInput_part2() throws Exception {
         String url = String.format("/weather");
 
         mockMvc.perform(get(url))

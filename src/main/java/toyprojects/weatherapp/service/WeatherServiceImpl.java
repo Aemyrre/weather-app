@@ -18,11 +18,13 @@ import org.springframework.web.client.RestTemplate;
 import com.jayway.jsonpath.DocumentContext;
 import com.jayway.jsonpath.JsonPath;
 
+import io.github.bucket4j.Bucket;
 import io.github.cdimascio.dotenv.Dotenv;
 import toyprojects.weatherapp.entity.WeatherData;
 import toyprojects.weatherapp.entity.WeatherDataDTO;
 import toyprojects.weatherapp.exception.CityNotFoundException;
 import toyprojects.weatherapp.exception.InvalidApiKeyException;
+import toyprojects.weatherapp.exception.RateLimitExceededException;
 import toyprojects.weatherapp.validation.WeatherParameterValidation;
 
 @Service
@@ -42,16 +44,63 @@ public class WeatherServiceImpl implements WeatherService {
 
     private final CacheManager cacheManager;
 
+    private final RateLimiterService rateLimiterService;
+
     private static final Logger logger = LoggerFactory.getLogger(WeatherServiceImpl.class);
 
-    public WeatherServiceImpl(RestTemplate restTemplate, WeatherParameterValidation validator, CacheManager cacheManager) {
+    public WeatherServiceImpl(RestTemplate restTemplate, WeatherParameterValidation validator, CacheManager cacheManager, RateLimiterService rateLimiterService) {
         this.restTemplate = restTemplate;
         this.validator = validator;
         this.cacheManager = cacheManager;
+        this.rateLimiterService = rateLimiterService;
+    }
+
+    @Override
+    public WeatherDataDTO getWeatherDataByCityWithRateLimit(String clientIp, String city, String units, String lang) {
+
+        Bucket bucket = rateLimiterService.getBucket(clientIp);
+        WeatherDataDTO cachedWeatherDataDTO = getCachedCurrentWeatherDataByCity(city, units, lang);
+        if (cachedWeatherDataDTO == null) {
+            if (!bucket.tryConsume(1)) {
+                logger.warn("Rate limit exceeded for IP: {}", clientIp);
+                throw new RateLimitExceededException();
+            }
+
+            logger.info("Weather retrieved from API. City={}", city);
+            return getCurrentWeatherDataByCity(city, units, lang);
+        }
+
+        logger.info("Weather retrieved from cache. City={}", city);
+
+        logger.info("Rate limiting applied only for API requests, not cached data.");
+        logger.info("Client IP: {}", clientIp);
+        logger.info("Remaining rate limit: {}", bucket.getAvailableTokens());
+        return cachedWeatherDataDTO;
+    }
+
+    @Override
+    public WeatherDataDTO getWeatherDataByCoordinatesWithRateLimit(String clientIp, double lat, double lon,
+            String units, String lang) {
+
+        Bucket bucket = rateLimiterService.getBucket(clientIp);
+        WeatherDataDTO cachedWeatherDataDTO = getCachedCurrentWeatherDataByCoordinates(lat, lon, units, lang);
+
+        if (cachedWeatherDataDTO == null) {
+            if (!bucket.tryConsume(1)) {
+                logger.warn("Rate limit exceeded for IP: {}", clientIp);
+                throw new RateLimitExceededException();
+            }
+
+            logger.info("Weather retrieved from API. lat={}, lon={}", lat, lon);
+            return getCurrentWeatherDataByCoordinates(lat, lon, units, lang);
+        }
+
+        logger.info("Weather retrieved from API. lat={}, lon={}", lat, lon);
+        return cachedWeatherDataDTO;
     }
 
     /**
-     * Fetches current weather data using city name for the controller
+     * Fetches current weather data using city name.
      *
      * @param city
      * @param units
@@ -74,8 +123,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     /**
-     * Fetches current weather data using coordinates (latitude, longitude) for
-     * the controller
+     * Fetches current weather data using coordinates (latitude, longitude)
      *
      * @param lat
      * @param lon
@@ -98,8 +146,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     /**
-     * Manually fetches cached current weather data using city name for the
-     * controller
+     * Manually fetches cached current weather data using city name
      *
      * @param city
      * @param units
@@ -120,7 +167,7 @@ public class WeatherServiceImpl implements WeatherService {
 
     /**
      * Manually fetches cached current weather data using coordinates (latitude,
-     * longitude) for the controller
+     * longitude)
      *
      * @param lat
      * @param lon
@@ -140,7 +187,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     /**
-     * Fetches weather forecast data using city name for the controller
+     * Fetches weather forecast data using city name
      *
      * @param city
      * @param units
@@ -163,7 +210,7 @@ public class WeatherServiceImpl implements WeatherService {
     }
 
     /**
-     * Fetches weather forecast data using coordinates for the controller
+     * Fetches weather forecast data using coordinates
      *
      * @param lat
      * @param lon
